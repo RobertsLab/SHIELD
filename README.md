@@ -76,15 +76,13 @@ npm run preview
 
 This project is configured for GitHub Pages with base path `/mock-farm-dashboard-03/` (must match the repository name).
 
-### GitHub Pages setup (required — fixes blank page)
+Deployment uses the official **GitHub Actions** workflow (`.github/workflows/deploy.yml`). Do **not** use branch-based deploy from `main` or `docs/` — that serves source files and causes blank pages or workflow conflicts.
 
-A blank page means GitHub Pages is serving **source files** instead of the **built app**.
+### One-time GitHub Pages setup
 
-1. Push to `main` (the GitHub Action builds and publishes the app to the **`docs/`** folder).
-2. In your repository go to **Settings → Pages**.
-3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
-4. Set **Branch** to **`main`** and **Folder** to **`/docs`** (not `/ (root)`).
-5. Save and wait 1–2 minutes.
+1. In your repository go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Push to `main` — the workflow builds `dist/` and deploys automatically.
 
 Your site will be at:
 
@@ -92,26 +90,17 @@ Your site will be at:
 https://<your-username>.github.io/mock-farm-dashboard-03/
 ```
 
-### Manual deploy (alternative)
+You can also trigger a deploy manually from the **Actions** tab → **Deploy to GitHub Pages** → **Run workflow**.
 
-```bash
-npm run build
-cp -r dist/* docs/
-cp dist/.nojekyll docs/
-git add docs/
-git commit -m "Update GitHub Pages build"
-git push origin main
-```
-
-Then confirm Pages is set to **main** branch, **`/docs`** folder as above.
-
-### Troubleshooting a blank page
+### Troubleshooting
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| Blank white page | Pages serving `main` root (dev `index.html` loads `/src/main.jsx`) | Switch Pages folder to **`/docs`** |
+| Workflow fails on "Deploy to docs/" | Old peaceiris workflow conflicting with GitHub Actions | Use the current `deploy-pages` workflow; set Pages source to **GitHub Actions** |
+| Blank white page | Pages serving `main` root or `/docs` instead of the Actions artifact | Set Pages source to **GitHub Actions** |
 | 404 on JS/CSS files | Wrong base path in `vite.config.js` | `base` must match repo name: `/mock-farm-dashboard-03/` |
 | `/map` route 404 | Missing SPA fallback | Build copies `index.html` → `404.html` automatically |
+| Intermittent deploy failures | Concurrent pushes racing to update `main` | The workflow uses concurrency control; re-run the failed job if needed |
 
 ### Important: Repository name
 
