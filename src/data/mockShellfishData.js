@@ -299,6 +299,45 @@ export function getTimeSeriesData(filtered, metric) {
   return { series, unit, metricKey };
 }
 
+export function getTemperatureBySiteSeries(filtered) {
+  const byDateSite = new Map();
+
+  for (const row of filtered) {
+    const key = `${row.date}|${row.site}`;
+    if (!byDateSite.has(key)) {
+      byDateSite.set(key, {
+        date: row.date,
+        label: `${row.month} ${row.year.replace('Year ', 'Y')}`,
+        site: row.site,
+        values: [],
+      });
+    }
+    byDateSite.get(key).values.push(row.temperature_C);
+  }
+
+  const activeSites = [
+    ...new Set(filtered.map((r) => r.site)),
+  ].sort((a, b) => SITES.indexOf(a) - SITES.indexOf(b));
+
+  const byDate = new Map();
+  for (const entry of byDateSite.values()) {
+    if (!byDate.has(entry.date)) {
+      byDate.set(entry.date, { date: entry.date, label: entry.label });
+    }
+    const mean =
+      Math.round(
+        (entry.values.reduce((s, v) => s + v, 0) / entry.values.length) * 10
+      ) / 10;
+    byDate.get(entry.date)[entry.site] = mean;
+  }
+
+  const series = [...byDate.values()].sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
+
+  return { series, sites: activeSites };
+}
+
 export function getTreatmentComparisonData(filtered, metric = 'survival') {
   const isSurvival = metric === 'survival';
   const metricKey = isSurvival ? 'survival_percent' : 'growth_mm';
