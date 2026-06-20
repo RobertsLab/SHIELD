@@ -82,7 +82,9 @@ export default function DataTable({ data }) {
         </div>
       </div>
       <p className="chart-caption">
-        Underlying mock monitoring records. Click column headers to sort.
+        Real field observation records (RobertsLab project-gigas-conditioning +
+        Baywater 10K-Seed). A “—” means that metric was not measured at that
+        assessment. Click column headers to sort.
       </p>
 
       {sorted.length === 0 ? (
@@ -111,7 +113,9 @@ export default function DataTable({ data }) {
                 {pageData.map((row) => (
                   <tr key={row.id}>
                     {COLUMNS.map((col) => (
-                      <td key={col.key}>{row[col.key]}</td>
+                      <td key={col.key}>
+                        {row[col.key] == null ? '—' : row[col.key]}
+                      </td>
                     ))}
                   </tr>
                 ))}

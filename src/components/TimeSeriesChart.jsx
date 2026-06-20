@@ -34,8 +34,8 @@ export default function TimeSeriesChart({ data, metric }) {
     <section className="chart-section card">
       <h2 className="section-title">Time Series — {metric}</h2>
       <p className="chart-caption">
-        Monthly mean {metric.toLowerCase()} over the monitoring period
-        {unit ? ` (${unit})` : ''}
+        Mean {metric.toLowerCase()} across filtered cohorts at each field
+        assessment{unit ? ` (${unit})` : ''}
       </p>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={360}>

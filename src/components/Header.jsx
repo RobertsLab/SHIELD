@@ -8,7 +8,8 @@ export default function Header() {
           <div>
             <h1>Shellfish Farm Outplant Dashboard</h1>
             <p className="subtitle">
-              Mock multi-year monitoring data across shellfish farm sites and
+              Multi-year <em>Crassostrea gigas</em> stress-hardening outplant
+              monitoring across Puget Sound &amp; Willapa Bay farm sites and
               priming treatments
             </p>
           </div>
@@ -33,8 +34,10 @@ export default function Header() {
           </nav>
         </div>
         <p className="disclaimer">
-          All data shown are simulated for demonstration purposes and do not
-          represent actual field measurements.
+          Real field measurements: survival &amp; image-derived shell growth
+          from RobertsLab outplant assessments (Goose Point, Sequim, Westcott)
+          plus Baywater 10K-Seed survival; temperature is the in-situ HOBO
+          logger monthly mean. Metrics not measured at an assessment are blank.
         </p>
       </div>
     </header>

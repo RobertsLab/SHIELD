@@ -21,9 +21,9 @@ export default function MapPage() {
       <section className="card map-intro">
         <h2 className="section-title">Geographic Site Overview</h2>
         <p className="chart-caption">
-          Mock outplant monitoring sites across the Pacific Northwest shellfish
-          farming region. Click a marker or site card to view location details.
-          Coordinates are simulated for demonstration.
+          RobertsLab <em>Crassostrea gigas</em> outplant monitoring sites across
+          the Pacific Northwest shellfish farming region. Click a marker or site
+          card to view location details and field summaries.
         </p>
       </section>
 
