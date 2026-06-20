@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Filters from '../components/Filters';
+import FieldReportExport from '../components/FieldReportExport';
 import SummaryCards from '../components/SummaryCards';
 import TimeSeriesChart from '../components/TimeSeriesChart';
 import LiveTemperaturePanel from '../components/LiveTemperaturePanel';
@@ -79,6 +80,11 @@ export default function DashboardPage() {
   return (
     <main className="dashboard-main">
       <Filters filters={filters} onChange={setFilters} />
+      <FieldReportExport
+        filters={filters}
+        stats={summaryStats}
+        data={filteredData}
+      />
       <SummaryCards stats={summaryStats} />
       <TimeSeriesChart data={timeSeriesData} metric={filters.metric} />
       <LiveTemperaturePanel />
