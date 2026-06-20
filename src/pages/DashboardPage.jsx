@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import Filters from '../components/Filters';
 import SummaryCards from '../components/SummaryCards';
 import TimeSeriesChart from '../components/TimeSeriesChart';
-import TemperatureBySiteChart from '../components/TemperatureBySiteChart';
+import ArchivalTemperatureChart from '../components/ArchivalTemperatureChart';
 import TreatmentComparisonChart from '../components/TreatmentComparisonChart';
 import SiteComparisonChart from '../components/SiteComparisonChart';
 import DataTable from '../components/DataTable';
@@ -13,7 +13,6 @@ import {
   filterData,
   computeSummaryStats,
   getTimeSeriesData,
-  getTemperatureBySiteSeries,
   getTreatmentComparisonData,
   getSiteComparisonData,
 } from '../data/mockShellfishData';
@@ -51,11 +50,6 @@ export default function DashboardPage() {
     [filteredData, filters.metric]
   );
 
-  const temperatureBySiteData = useMemo(
-    () => getTemperatureBySiteSeries(filteredData),
-    [filteredData]
-  );
-
   const treatmentSurvivalData = useMemo(
     () => getTreatmentComparisonData(filteredData, 'survival'),
     [filteredData]
@@ -86,7 +80,7 @@ export default function DashboardPage() {
       <Filters filters={filters} onChange={setFilters} />
       <SummaryCards stats={summaryStats} />
       <TimeSeriesChart data={timeSeriesData} metric={filters.metric} />
-      <TemperatureBySiteChart data={temperatureBySiteData} />
+      <ArchivalTemperatureChart />
       <div className="charts-row">
         <TreatmentComparisonChart
           survivalData={treatmentSurvivalData}

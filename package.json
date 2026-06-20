@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:temperature": "node scripts/buildArchivalTemperature.mjs",
     "build": "vite build && cp dist/index.html dist/404.html && touch dist/.nojekyll",
     "preview": "vite preview",
     "deploy": "npm run build"
