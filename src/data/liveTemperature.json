@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T18:45:42Z",
+  "generatedAt": "2026-06-20T20:41:23Z",
   "description": "Near-live water temperature (\u00b0C) from the closest public NOAA NDBC buoy or CO-OPS station to each outplant site. Refreshed on a schedule by scripts/build_live_temperature.py; not the in-situ HOBO loggers.",
   "maxAgeHours": 48,
   "sites": [
@@ -17,8 +17,8 @@
       "station_lat": 48.1112,
       "station_lon": -122.7597,
       "distance_km": 33.8,
-      "temperature_C": 12.4,
-      "observed_at": "2026-06-20T18:36:00Z",
+      "temperature_C": 13.2,
+      "observed_at": "2026-06-20T20:36:00Z",
       "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_temperature&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard"
     },
     {
@@ -29,8 +29,8 @@
       "station_lat": 48.333,
       "station_lon": -123.165,
       "distance_km": 30.9,
-      "temperature_C": 11.3,
-      "observed_at": "2026-06-20T18:20:00Z",
+      "temperature_C": 11.8,
+      "observed_at": "2026-06-20T20:00:00Z",
       "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt"
     },
     {
@@ -41,8 +41,8 @@
       "station_lat": 46.858,
       "station_lon": -124.244,
       "distance_km": 39.5,
-      "temperature_C": 12.1,
-      "observed_at": "2026-06-20T17:56:00Z",
+      "temperature_C": 12.3,
+      "observed_at": "2026-06-20T19:56:00Z",
       "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46211.txt"
     },
     {
@@ -53,8 +53,8 @@
       "station_lat": 48.333,
       "station_lon": -123.165,
       "distance_km": 27.7,
-      "temperature_C": 11.3,
-      "observed_at": "2026-06-20T18:20:00Z",
+      "temperature_C": 11.8,
+      "observed_at": "2026-06-20T20:00:00Z",
       "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt"
     }
   ]
