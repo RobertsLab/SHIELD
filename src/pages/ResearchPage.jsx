@@ -131,10 +131,10 @@ export default function ResearchPage() {
             <h2 className="section-title">Researchers and Collaborators</h2>
           </div>
           <p className="chart-caption">
-            The research is led by Ariana Huffmyer with Steven Roberts, with
-            Washington Sea Grant project leadership from Emily Carrington and
-            contributions from postdoctoral, graduate, and undergraduate
-            researchers across oyster, clam, and cockle field studies.
+            The research is led by Ariana Huffmyer with Steven Roberts, Emily
+            Carrington and contributions from postdoctoral, graduate, and
+            undergraduate researchers across oyster, clam, and cockle field
+            studies.
           </p>
         </div>
 
