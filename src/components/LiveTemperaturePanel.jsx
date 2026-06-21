@@ -1,5 +1,21 @@
 import liveTemperature from '../data/liveTemperature.json';
 import archivalTemperature from '../data/archivalTemperatureData.json';
+import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+const LIVE_SITE_LOCATIONS = {
+  Baywater: { lat: 47.808, lon: -122.738, color: '#2563eb' },
+  'Dabob Bay': { lat: 47.7617, lon: -122.85, color: '#0f766e' },
+  'Sequim Bay': { lat: 48.07, lon: -123.03, color: '#0891b2' },
+  'Goose Point': { lat: 46.62, lon: -123.86, color: '#d97706' },
+  Westcott: { lat: 48.582, lon: -123.167, color: '#6366f1' },
+};
+
+const SOURCE_PROVIDER_COLORS = {
+  'NOAA NDBC': '#0f766e',
+  'NOAA CO-OPS': '#2563eb',
+  'USGS NWIS': '#7c3aed',
+};
 
 const METRIC_ORDER = [
   'water_temperature_C',
@@ -170,8 +186,242 @@ function metricRows(metrics = {}) {
   return [...ordered, ...extras];
 }
 
+function getProviderColor(provider = '') {
+  const match = Object.keys(SOURCE_PROVIDER_COLORS).find((key) =>
+    provider.startsWith(key)
+  );
+  return SOURCE_PROVIDER_COLORS[match] ?? '#64748b';
+}
+
+function formatCoords(lat, lon) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return 'No coordinates';
+  const ns = lat >= 0 ? 'N' : 'S';
+  const ew = lon >= 0 ? 'E' : 'W';
+  return `${Math.abs(lat).toFixed(4)}°${ns}, ${Math.abs(lon).toFixed(4)}°${ew}`;
+}
+
+function getSourceRows(observations) {
+  return observations.flatMap((observation) =>
+    metricRows(observation.metrics).map((metric) => ({
+      site: observation.site,
+      siteLocation: LIVE_SITE_LOCATIONS[observation.site],
+      metricKey: metric.key,
+      metricLabel: metric.label,
+      provider: metric.provider ?? observation.provider ?? 'Unknown source',
+      stationId: metric.station_id,
+      stationName: metric.station_name ?? observation.station_name ?? 'Unspecified station',
+      stationLat: metric.station_lat,
+      stationLon: metric.station_lon,
+      distanceKm: metric.distance_km,
+      sourceUrl: metric.source_url,
+      observedAt: metric.observed_at,
+      status: metric.status,
+      note: metric.note,
+    }))
+  );
+}
+
+function getMapSources(sourceRows) {
+  const grouped = new Map();
+  for (const row of sourceRows) {
+    if (!Number.isFinite(row.stationLat) || !Number.isFinite(row.stationLon)) {
+      continue;
+    }
+    const key = [
+      row.site,
+      row.provider,
+      row.stationId,
+      row.stationName,
+      row.stationLat,
+      row.stationLon,
+    ].join('|');
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.metrics.push(row.metricLabel);
+      continue;
+    }
+    grouped.set(key, { ...row, metrics: [row.metricLabel] });
+  }
+  return [...grouped.values()];
+}
+
+function getSourceBounds(observations, mapSources) {
+  const points = [
+    ...observations
+      .map((observation) => LIVE_SITE_LOCATIONS[observation.site])
+      .filter(Boolean)
+      .map((location) => [location.lat, location.lon]),
+    ...mapSources.map((source) => [source.stationLat, source.stationLon]),
+  ];
+
+  if (!points.length) {
+    return [
+      [46.4, -124.5],
+      [48.8, -122.4],
+    ];
+  }
+
+  const lats = points.map(([lat]) => lat);
+  const lons = points.map(([, lon]) => lon);
+  return [
+    [Math.min(...lats) - 0.18, Math.min(...lons) - 0.28],
+    [Math.max(...lats) + 0.18, Math.max(...lons) + 0.28],
+  ];
+}
+
+function LiveSourceMap({ observations, sourceRows }) {
+  const mapSources = getMapSources(sourceRows);
+  const bounds = getSourceBounds(observations, mapSources);
+
+  return (
+    <div className="live-source-map-wrapper">
+      <MapContainer
+        bounds={bounds}
+        boundsOptions={{ padding: [32, 32] }}
+        scrollWheelZoom
+        className="live-source-map"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {mapSources.map((source) => {
+          const siteLocation = source.siteLocation;
+          const providerColor = getProviderColor(source.provider);
+          return siteLocation ? (
+            <Polyline
+              key={`${source.site}-${source.stationName}-${source.metrics.join('-')}-line`}
+              positions={[
+                [siteLocation.lat, siteLocation.lon],
+                [source.stationLat, source.stationLon],
+              ]}
+              pathOptions={{
+                color: providerColor,
+                opacity: 0.35,
+                weight: 2,
+                dashArray: '5 7',
+              }}
+            />
+          ) : null;
+        })}
+
+        {observations.map((observation) => {
+          const location = LIVE_SITE_LOCATIONS[observation.site];
+          if (!location) return null;
+          return (
+            <CircleMarker
+              key={`${observation.site}-live-site`}
+              center={[location.lat, location.lon]}
+              radius={9}
+              pathOptions={{
+                color: location.color,
+                fillColor: location.color,
+                fillOpacity: 0.85,
+                weight: 3,
+              }}
+            >
+              <Popup>
+                <div className="map-popup">
+                  <strong>{observation.site}</strong>
+                  <p className="map-popup-region">Farm/site location</p>
+                  <p>{formatCoords(location.lat, location.lon)}</p>
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+
+        {mapSources.map((source) => (
+          <CircleMarker
+            key={`${source.site}-${source.stationName}-${source.metrics.join('-')}`}
+            center={[source.stationLat, source.stationLon]}
+            radius={7}
+            pathOptions={{
+              color: '#0f172a',
+              fillColor: getProviderColor(source.provider),
+              fillOpacity: 0.75,
+              weight: 2,
+            }}
+          >
+            <Popup>
+              <div className="map-popup">
+                <strong>{source.stationName}</strong>
+                <p className="map-popup-region">
+                  {source.provider} for {source.site}
+                </p>
+                <p>{formatCoords(source.stationLat, source.stationLon)}</p>
+                <p>{source.metrics.join(', ')}</p>
+                {source.distanceKm != null ? (
+                  <p>{source.distanceKm} km from site</p>
+                ) : null}
+                {source.sourceUrl ? (
+                  <a
+                    href={source.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="map-popup-link"
+                  >
+                    Open source
+                  </a>
+                ) : null}
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+      </MapContainer>
+    </div>
+  );
+}
+
+function LiveSourceLedger({ rows }) {
+  return (
+    <div className="live-source-ledger">
+      <div className="live-source-table" role="table" aria-label="Live environmental data sources">
+        <div className="live-source-table-row live-source-table-head" role="row">
+          <span role="columnheader">Site</span>
+          <span role="columnheader">Data</span>
+          <span role="columnheader">Source</span>
+          <span role="columnheader">Location</span>
+        </div>
+        {rows.map((row) => (
+          <div
+            key={`${row.site}-${row.metricKey}-${row.stationName}-${row.sourceUrl}`}
+            className="live-source-table-row"
+            role="row"
+          >
+            <span role="cell">{row.site}</span>
+            <span role="cell">{row.metricLabel}</span>
+            <span role="cell">
+              <strong>{row.provider}</strong>
+              <small>
+                {row.stationName}
+                {row.stationId ? ` (${row.stationId})` : ''}
+              </small>
+              {row.sourceUrl ? (
+                <a href={row.sourceUrl} target="_blank" rel="noreferrer">
+                  Source
+                </a>
+              ) : null}
+            </span>
+            <span role="cell">
+              <small>{formatCoords(row.stationLat, row.stationLon)}</small>
+              {row.distanceKm != null ? <small>{row.distanceKm} km from site</small> : null}
+              {row.status === 'source-matched' ? (
+                <small>Matched source; import pending</small>
+              ) : null}
+              {row.note ? <small>{row.note}</small> : null}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function LiveTemperaturePanel() {
   const { observations, description, generatedAt, maxAgeHours } = liveTemperature;
+  const sourceRows = getSourceRows(observations);
 
   return (
     <section className="card" aria-label="Live environmental snapshot">
@@ -263,6 +513,22 @@ export default function LiveTemperaturePanel() {
             </article>
           );
         })}
+      </div>
+
+      <div className="live-source-section" aria-label="Live environmental data source locations">
+        <div className="chart-header-row">
+          <h2 className="section-title">Data Sources and Locations</h2>
+          <span className="live-temperature-badge">{sourceRows.length} data feeds</span>
+        </div>
+        <p className="chart-caption">
+          Farm/site markers are connected to the public observing stations used
+          for each live metric. Rows without coordinates are source matches that
+          are documented in the ledger but not plotted as station markers.
+        </p>
+        <div className="live-source-layout">
+          <LiveSourceMap observations={observations} sourceRows={sourceRows} />
+          <LiveSourceLedger rows={sourceRows} />
+        </div>
       </div>
 
       <p className="chart-source-note">
