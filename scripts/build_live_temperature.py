@@ -45,6 +45,7 @@ HTTP_TIMEOUT = 30
 # without entering the oyster observation dataset.
 SITES = {
     "Baywater": (47.808, -122.738),       # Thorndyke Bay, Hood Canal
+    "Bainbridge Island": (47.6262, -122.5212),  # Central Puget Sound
     "Dabob Bay": (47.7617, -122.85),      # Whitney Point / Pt. Whitney Lagoon
     "Sequim Bay": (48.07, -123.03),       # Sequim Bay
     "Goose Point": (46.62, -123.86),      # Palix River, Willapa Bay
@@ -57,6 +58,14 @@ SITES = {
 STATION_CANDIDATES = {
     "Baywater": [
         {"type": "ndbc", "id": "46125", "name": "Hood Canal (NDBC 46125)",
+         "lat": 47.907, "lon": -122.627},
+        {"type": "coops", "id": "9444900", "name": "Port Townsend",
+         "lat": 48.1112, "lon": -122.7597},
+    ],
+    "Bainbridge Island": [
+        {"type": "coops", "id": "9447130", "name": "Seattle",
+         "lat": 47.6026, "lon": -122.3393},
+        {"type": "ndbc", "id": "46125", "name": "Hansville - Hood Canal (NDBC 46125)",
          "lat": 47.907, "lon": -122.627},
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
@@ -96,6 +105,12 @@ CHLOROPHYLL_CANDIDATES = {
         "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
         "note": "Closest shellfish-focused in-situ chlorophyll match for Thorndyke/Hood Canal.",
     },
+    "Bainbridge Island": {
+        "provider": "NANOOS Shellfish Growers / Puget Sound water quality",
+        "station_name": "Central Puget Sound monitoring stations",
+        "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
+        "note": "Regional Puget Sound shellfish water-quality source; pair with nearby NOAA Seattle / Port Townsend feeds.",
+    },
     "Dabob Bay": {
         "provider": "NANOOS Shellfish Growers / UW ORCA",
         "station_name": "Hood Canal ORCA Dabob Bay mooring",
@@ -127,6 +142,12 @@ TIDE_STATION_CANDIDATES = {
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
     ],
+    "Bainbridge Island": [
+        {"type": "coops", "id": "9447130", "name": "Seattle",
+         "lat": 47.6026, "lon": -122.3393},
+        {"type": "coops", "id": "9445958", "name": "Bremerton",
+         "lat": 47.5617, "lon": -122.6230},
+    ],
     "Dabob Bay": [
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
@@ -150,6 +171,12 @@ TIDE_STATION_CANDIDATES = {
 }
 
 TIDE_PREDICTION_CANDIDATES = {
+    "Bainbridge Island": [
+        {"id": "9447130", "name": "Seattle",
+         "lat": 47.6026, "lon": -122.3393},
+        {"id": "9445958", "name": "Bremerton",
+         "lat": 47.5617, "lon": -122.6230},
+    ],
     "Dabob Bay": [
         {"id": "9445246", "name": "Whitney Point, Dabob Bay",
          "lat": 47.7617, "lon": -122.85},

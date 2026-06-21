@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 
 const LIVE_SITE_LOCATIONS = {
   Baywater: { lat: 47.808, lon: -122.738, color: '#2563eb' },
+  'Bainbridge Island': { lat: 47.6262, lon: -122.5212, color: '#16a34a' },
   'Dabob Bay': { lat: 47.7617, lon: -122.85, color: '#0f766e' },
   'Sequim Bay': { lat: 48.07, lon: -123.03, color: '#0891b2' },
   'Goose Point': { lat: 46.62, lon: -123.86, color: '#d97706' },
