@@ -60,7 +60,7 @@ const researchers = [
     name: 'Megan Ewing',
     role: 'Incoming graduate student researcher',
     description:
-      'Beginning in July 2026, will expand related work with manila clams and cockles at sites near Suquamish and Westcott.',
+      'Beginning in 2026, will expand related work with manila clams and basket cockles, including Manila clam field deployments at Agate Pass and Weavering Spit.',
   },
   {
     name: 'Jesse Lowe',
@@ -90,6 +90,16 @@ const fundingAwards = [
     researchLead: 'Ariana Huffmyer and Steven Roberts',
     summary:
       'This work focused on improving oyster stock resilience by optimizing hatchery-based conditioning practices. Research tested early-life stage environmental conditioning and broodstock husbandry to evaluate developmental and transgenerational plasticity as routes to carry-over benefits during later grow-out.',
+  },
+  {
+    agency: 'UW School of Aquatic and Fishery Sciences',
+    status: 'Donaldson research support',
+    title:
+      'Donaldson Finfish and Shellfish Breeding and Culture: field testing thermal and immune stress priming in Manila clams',
+    lead: 'Megan Ewing',
+    researchLead: 'Megan Ewing with Roberts Lab mentorship',
+    summary:
+      'This award supports Megan Ewing’s dissertation research on improving field performance and environmental resilience of Manila clams through thermal and immune stress priming. Manila clam seed will be conditioned in the laboratory at UW and outplanted to Agate Pass and Weavering Spit in June 2026, with retrievals designed to evaluate immediate, post-summer, and longer-term effects of priming.',
   },
 ];
 
@@ -159,7 +169,9 @@ export default function ResearchPage() {
           <p className="chart-caption">
             This work is supported by Washington Sea Grant and builds on a
             recently completed USDA award focused on hatchery-based oyster
-            conditioning for climate resilience.
+            conditioning for climate resilience. Megan Ewing’s related clam
+            research is also supported through UW SAFS Donaldson research
+            support.
           </p>
         </div>
 
@@ -194,7 +206,10 @@ export default function ResearchPage() {
             Together, these awards support a connected research program on
             oyster climate resilience, from conditioning larvae and broodstock
             in hatchery settings to evaluating survival and performance after
-            deployment at commercial grow-out sites.
+            deployment at commercial grow-out sites. New related work extends
+            this conditioning framework to Manila clams and basket cockles,
+            linking laboratory priming experiments with field performance at
+            partner sites.
           </p>
         </div>
       </section>
