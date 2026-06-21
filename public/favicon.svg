@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SHIELD">
+  <title>SHIELD</title>
+  <rect x="0" y="0" width="64" height="64" rx="13" fill="#f8fafc"/>
+  <g transform="translate(10,7) scale(0.36)">
+    <path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z" fill="#1e3a5f"/>
+    <clipPath id="fc"><path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z"/></clipPath>
+    <g clip-path="url(#fc)">
+      <path d="M8 96 Q26 86 44 96 T80 96 T116 96 V150 H8 Z" fill="#2563eb" opacity="0.9"/>
+      <path d="M8 106 Q26 98 44 106 T80 106 T116 106 V150 H8 Z" fill="#38bdf8" opacity="0.85"/>
+    </g>
+    <path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z" fill="none" stroke="#2563eb" stroke-width="3"/>
+    <path d="M60 104 Q33 96 34 54 Q60 42 86 54 Q87 96 60 104 Z" fill="#f8fafc"/>
+    <g stroke="#1e3a5f" stroke-width="2.6" stroke-linecap="round" fill="none">
+      <path d="M60 104 L36 58"/>
+      <path d="M60 104 L48 50"/>
+      <path d="M60 104 L60 46"/>
+      <path d="M60 104 L72 50"/>
+      <path d="M60 104 L84 58"/>
+    </g>
+    <ellipse cx="60" cy="104" rx="7" ry="4.5" fill="#1e3a5f"/>
+  </g>
+</svg>
