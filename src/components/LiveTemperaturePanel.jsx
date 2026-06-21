@@ -31,7 +31,7 @@ function formatGeneratedAt(value) {
 function formatMetric(metric) {
   if (!metric) return 'Unavailable';
   if (metric.value == null) {
-    return metric.status === 'source-matched' ? 'Source matched' : 'Unavailable';
+    return metric.status === 'source-matched' ? 'Import pending' : 'Unavailable';
   }
   return `${metric.value} ${metric.unit}`.trim();
 }
