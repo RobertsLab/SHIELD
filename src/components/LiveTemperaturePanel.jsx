@@ -35,6 +35,16 @@ const TARGET_RED_SUMMER_STAGES = { min: 4, max: 5 };
 const VERY_LOW_TIDE_M = 0.3;
 const TIDE_WATCH_M = 0.6;
 const TEMP_WATCH_MARGIN_C = 1.5;
+const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
+const PACIFIC_DATE_TIME_FORMAT_OPTIONS = {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: PACIFIC_TIME_ZONE,
+  timeZoneName: 'short',
+};
 
 function calibrateMortalityTemperatureThreshold() {
   const summerSiteDays = [];
@@ -105,20 +115,12 @@ const MORTALITY_TEMP_THRESHOLD = calibrateMortalityTemperatureThreshold();
 
 function formatObservedAt(value) {
   if (!value) return 'No timestamp';
-  return new Date(value).toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  });
+  return new Date(value).toLocaleString('en-US', PACIFIC_DATE_TIME_FORMAT_OPTIONS);
 }
 
 function formatGeneratedAt(value) {
   if (!value) return 'Unknown';
-  return new Date(value).toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  });
+  return new Date(value).toLocaleString('en-US', PACIFIC_DATE_TIME_FORMAT_OPTIONS);
 }
 
 function formatMetric(metric) {
@@ -532,7 +534,7 @@ export default function LiveTemperaturePanel() {
       </div>
 
       <p className="chart-source-note">
-        Snapshot generated {formatGeneratedAt(generatedAt)} UTC.
+        Snapshot generated {formatGeneratedAt(generatedAt)}.
       </p>
     </section>
   );
