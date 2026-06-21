@@ -1,0 +1,25 @@
+<svg width="560" height="150" viewBox="0 0 560 150" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SHIELD — Shellfish Hardening and Integrated Environmental Longitudinal Dashboard">
+  <title>SHIELD</title>
+  <desc>Shield mark with oyster shell and waterline, beside the SHIELD wordmark and full-name subtitle.</desc>
+  <g transform="translate(14,11) scale(0.92)">
+    <path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z" fill="#1e3a5f"/>
+    <clipPath id="lk"><path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z"/></clipPath>
+    <g clip-path="url(#lk)">
+      <path d="M8 96 Q26 86 44 96 T80 96 T116 96 V150 H8 Z" fill="#2563eb" opacity="0.9"/>
+      <path d="M8 106 Q26 98 44 106 T80 106 T116 106 V150 H8 Z" fill="#38bdf8" opacity="0.85"/>
+    </g>
+    <path d="M60 12 L106 28 V70 C106 102 88 126 60 138 C32 126 14 102 14 70 V28 Z" fill="none" stroke="#2563eb" stroke-width="3"/>
+    <path d="M60 104 Q33 96 34 54 Q60 42 86 54 Q87 96 60 104 Z" fill="#f8fafc"/>
+    <g stroke="#1e3a5f" stroke-width="2.2" stroke-linecap="round" fill="none">
+      <path d="M60 104 L36 58"/>
+      <path d="M60 104 L48 50"/>
+      <path d="M60 104 L60 46"/>
+      <path d="M60 104 L72 50"/>
+      <path d="M60 104 L84 58"/>
+    </g>
+    <ellipse cx="60" cy="104" rx="7" ry="4.5" fill="#1e3a5f"/>
+  </g>
+  <text x="146" y="66" font-family="'Inter', system-ui, sans-serif" font-size="50" font-weight="700" letter-spacing="4" fill="#1e3a5f">SHIELD</text>
+  <text x="148" y="96" font-family="'Inter', system-ui, sans-serif" font-size="14" fill="#64748b">Shellfish Hardening and Integrated</text>
+  <text x="148" y="116" font-family="'Inter', system-ui, sans-serif" font-size="14" fill="#64748b">Environmental Longitudinal Dashboard</text>
+</svg>
