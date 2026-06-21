@@ -77,7 +77,6 @@ const fundingAwards = [
     title:
       'A collaborative partnership to address mass mortalities in oyster aquaculture through improved field monitoring, husbandry practices, and workforce development',
     lead: 'Emily Carrington',
-    researchLead: 'Ariana Huffmyer',
     summary:
       'This collaborative partnership aims to support sustainable expansion of oyster aquaculture in Washington State by reducing mass mortality events linked to OsHV-1 infection and extreme climate events. The work combines environmental monitoring, oyster mortality data, hatchery stress-priming trials, and workforce training.',
   },
@@ -86,8 +85,7 @@ const fundingAwards = [
     status: 'Recently completed award',
     title:
       'Improved climate resilience in oysters through optimization of hatchery-based environmental conditioning practices',
-    lead: 'Project team with academic, industry, and tribal stakeholders',
-    researchLead: 'Ariana Huffmyer and Steven Roberts',
+    lead: 'Steven Roberts',
     summary:
       'This work focused on improving oyster stock resilience by optimizing hatchery-based conditioning practices. Research tested early-life stage environmental conditioning and broodstock husbandry to evaluate developmental and transgenerational plasticity as routes to carry-over benefits during later grow-out.',
   },
@@ -97,7 +95,6 @@ const fundingAwards = [
     title:
       'Donaldson Finfish and Shellfish Breeding and Culture: field testing thermal and immune stress priming in Manila clams',
     lead: 'Megan Ewing',
-    researchLead: 'Megan Ewing with Roberts Lab mentorship',
     summary:
       'This award supports Megan Ewing’s dissertation research on improving field performance and environmental resilience of Manila clams through thermal and immune stress priming. Manila clam seed will be conditioned in the laboratory at UW and outplanted to Agate Pass and Weavering Spit in June 2026, with retrievals designed to evaluate immediate, post-summer, and longer-term effects of priming.',
   },
@@ -189,10 +186,6 @@ export default function ResearchPage() {
                 <div>
                   <dt>Award lead</dt>
                   <dd>{award.lead}</dd>
-                </div>
-                <div>
-                  <dt>Research lead</dt>
-                  <dd>{award.researchLead}</dd>
                 </div>
               </dl>
               <p>{award.summary}</p>
