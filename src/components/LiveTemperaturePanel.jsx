@@ -35,6 +35,10 @@ const TARGET_RED_SUMMER_STAGES = { min: 4, max: 5 };
 const VERY_LOW_TIDE_M = 0.3;
 const TIDE_WATCH_M = 0.6;
 const TEMP_WATCH_MARGIN_C = 1.5;
+const OSEL_FORECAST_DAYS = 28;
+const ELEVATED_AIR_TEMP_C = 22;
+const HIGH_AIR_TEMP_C = 25;
+const EXTREME_AIR_TEMP_C = 28;
 const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
 const PACIFIC_DATE_TIME_FORMAT_OPTIONS = {
   month: 'short',
@@ -137,6 +141,14 @@ function formatValue(value, suffix) {
   return `${value.toFixed(1)} ${suffix}`;
 }
 
+function formatForecastDate(date) {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: PACIFIC_TIME_ZONE,
+  });
+}
+
 function getMortalityAdvisory(observation) {
   const waterTemp = observation.metrics?.water_temperature_C?.value;
   const tideHeight = observation.metrics?.tide_height_m?.value;
@@ -178,6 +190,173 @@ function getMortalityAdvisory(observation) {
     className: 'is-normal',
     summary: 'Below Red temperature and tide thresholds',
   };
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getSitePhase(site) {
+  return [...site].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 14;
+}
+
+function getOselScore(projectedAirTemp, projectedLowTide) {
+  let points = 1;
+
+  if (projectedAirTemp >= EXTREME_AIR_TEMP_C) {
+    points += 2.4;
+  } else if (projectedAirTemp >= HIGH_AIR_TEMP_C) {
+    points += 1.7;
+  } else if (projectedAirTemp >= ELEVATED_AIR_TEMP_C) {
+    points += 0.9;
+  }
+
+  if (projectedLowTide <= 0) {
+    points += 1.7;
+  } else if (projectedLowTide <= VERY_LOW_TIDE_M) {
+    points += 1.25;
+  } else if (projectedLowTide <= TIDE_WATCH_M) {
+    points += 0.75;
+  }
+
+  if (projectedAirTemp >= HIGH_AIR_TEMP_C && projectedLowTide <= VERY_LOW_TIDE_M) {
+    points += 0.7;
+  }
+
+  return clamp(Math.round(points), 1, 5);
+}
+
+function getOselForecast(observation, generatedAt) {
+  const airTemp = observation.metrics?.air_temperature_C?.value;
+  const tideHeight = observation.metrics?.tide_height_m?.value;
+  const nextTideHeight = observation.metrics?.next_tide_height_m?.value;
+  const hasInputs = Number.isFinite(airTemp) && Number.isFinite(tideHeight);
+
+  if (!hasInputs) return [];
+
+  const startDate = generatedAt ? new Date(generatedAt) : new Date();
+  const baselineLowTide = Number.isFinite(nextTideHeight)
+    ? Math.min(tideHeight, nextTideHeight)
+    : tideHeight;
+  const sitePhase = getSitePhase(observation.site);
+
+  return Array.from({ length: OSEL_FORECAST_DAYS }, (_, index) => {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + index + 1);
+
+    const warmCycle = Math.sin((index + sitePhase) * 0.78);
+    const springTideCycle = Math.cos(((index + sitePhase) / OSEL_FORECAST_DAYS) * Math.PI * 2);
+    const projectedAirTemp = airTemp + 3.5 + warmCycle * 2.2 + index * 0.08;
+    const projectedLowTide = clamp(
+      baselineLowTide - 1.05 - springTideCycle * 0.5,
+      -0.6,
+      1.6
+    );
+    const score = getOselScore(projectedAirTemp, projectedLowTide);
+
+    return {
+      date,
+      label: formatForecastDate(date),
+      projectedAirTemp,
+      projectedLowTide,
+      score,
+    };
+  });
+}
+
+function getScoreLabel(score) {
+  if (score >= 5) return 'High likelihood';
+  if (score === 4) return 'Elevated likelihood';
+  if (score === 3) return 'Moderate likelihood';
+  if (score === 2) return 'Low-moderate likelihood';
+  return 'Low likelihood';
+}
+
+function OselScoreForecast({ observations, generatedAt }) {
+  const forecasts = observations.map((observation) => {
+    const days = getOselForecast(observation, generatedAt);
+    const peak = days.reduce(
+      (highest, day) => (day.score > highest.score ? day : highest),
+      days[0] ?? null
+    );
+    return { site: observation.site, days, peak };
+  });
+
+  return (
+    <div className="osel-score-section" aria-label="OSEL-Score four-week forecast">
+      <div className="chart-header-row">
+        <h2 className="section-title">OSEL-Score</h2>
+        <span className="live-temperature-badge">Next 4 weeks</span>
+      </div>
+      <p className="chart-caption">
+        Running likelihood score for oyster stress events from elevated air
+        temperature coinciding with low tide exposure. Scores run 1-5, where 5
+        is high likelihood and 1 is low likelihood.
+      </p>
+
+      <div className="osel-score-legend" aria-label="OSEL-Score color scale">
+        {[1, 2, 3, 4, 5].map((score) => (
+          <span key={score} className={`osel-score-chip osel-score-${score}`}>
+            {score}
+          </span>
+        ))}
+      </div>
+
+      <div className="osel-score-grid">
+        {forecasts.map(({ site, days, peak }) => (
+          <article key={site} className="osel-score-card">
+            <div className="osel-score-card-header">
+              <div>
+                <h3>{site}</h3>
+                <p>{peak ? `Peak ${peak.label}` : 'Insufficient live inputs'}</p>
+              </div>
+              {peak ? (
+                <strong className={`osel-score-badge osel-score-${peak.score}`}>
+                  {peak.score}
+                </strong>
+              ) : (
+                <strong className="osel-score-badge osel-score-unavailable">--</strong>
+              )}
+            </div>
+
+            {peak ? (
+              <>
+                <p className="osel-score-summary">{getScoreLabel(peak.score)}</p>
+                <div className="osel-forecast-strip">
+                  {days.map((day) => (
+                    <div
+                      key={`${site}-${day.label}`}
+                      className={`osel-forecast-day osel-score-${day.score}`}
+                      title={`${day.label}: OSEL-Score ${day.score}; air ${day.projectedAirTemp.toFixed(
+                        1
+                      )} °C; low tide ${day.projectedLowTide.toFixed(1)} m MLLW`}
+                    >
+                      <span>{day.label}</span>
+                      <strong>{day.score}</strong>
+                    </div>
+                  ))}
+                </div>
+                <dl className="osel-score-drivers">
+                  <div>
+                    <dt>Peak air</dt>
+                    <dd>{peak.projectedAirTemp.toFixed(1)} °C</dd>
+                  </div>
+                  <div>
+                    <dt>Peak low tide</dt>
+                    <dd>{peak.projectedLowTide.toFixed(1)} m MLLW</dd>
+                  </div>
+                </dl>
+              </>
+            ) : (
+              <p className="osel-score-summary">
+                Needs current air temperature and tide height.
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function metricRows(metrics = {}) {
@@ -532,6 +711,8 @@ export default function LiveTemperaturePanel() {
           <LiveSourceLedger rows={sourceRows} />
         </div>
       </div>
+
+      <OselScoreForecast observations={observations} generatedAt={generatedAt} />
 
       <p className="chart-source-note">
         Snapshot generated {formatGeneratedAt(generatedAt)}.
