@@ -1,4 +1,4 @@
-name: Refresh live temperature
+name: Refresh live environment
 
 on:
   schedule:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: live-temperature
+  group: live-environment
   cancel-in-progress: true
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch latest water temperature
+      - name: Fetch latest environmental observations
         run: python3 scripts/build_live_temperature.py
 
       - name: Commit snapshot if changed
@@ -36,5 +36,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/data/liveTemperature.json
-          git commit -m "Refresh live water temperature snapshot"
+          git commit -m "Refresh live environmental snapshot"
           git push

@@ -1,7 +1,53 @@
 {
-  "generatedAt": "2026-06-21T01:39:50Z",
-  "description": "Near-live water temperature (\u00b0C) from the closest public NOAA NDBC buoy or CO-OPS station to each outplant site. Refreshed on a schedule by scripts/build_live_temperature.py; not the in-situ HOBO loggers.",
+  "generatedAt": "2026-06-21T02:41:46Z",
+  "description": "Near-live environmental observations from matched NOAA NDBC buoys, NOAA CO-OPS stations, and NANOOS shellfish water-quality sources. Refreshed on a schedule by scripts/build_live_temperature.py; not the in-situ HOBO loggers.",
   "maxAgeHours": 48,
+  "metricDefinitions": {
+    "water_temperature_C": {
+      "label": "Water temp",
+      "unit": "\u00b0C"
+    },
+    "air_temperature_C": {
+      "label": "Air temp",
+      "unit": "\u00b0C"
+    },
+    "air_pressure_mb": {
+      "label": "Pressure",
+      "unit": "mb"
+    },
+    "wind_speed_m_s": {
+      "label": "Wind",
+      "unit": "m/s"
+    },
+    "wind_gust_m_s": {
+      "label": "Gust",
+      "unit": "m/s"
+    },
+    "wind_direction_deg": {
+      "label": "Wind dir",
+      "unit": "\u00b0"
+    },
+    "salinity_psu": {
+      "label": "Salinity",
+      "unit": "psu"
+    },
+    "conductivity": {
+      "label": "Conductivity",
+      "unit": ""
+    },
+    "relative_humidity_percent": {
+      "label": "Humidity",
+      "unit": "%"
+    },
+    "wave_height_m": {
+      "label": "Wave height",
+      "unit": "m"
+    },
+    "chlorophyll_fluorescence": {
+      "label": "Chlorophyll",
+      "unit": "RFU"
+    }
+  },
   "sites": [
     "Baywater",
     "Sequim Bay",
@@ -17,9 +63,112 @@
       "station_lat": 48.1112,
       "station_lon": -122.7597,
       "distance_km": 33.8,
-      "temperature_C": 14.1,
-      "observed_at": "2026-06-21T01:30:00Z",
-      "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_temperature&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard"
+      "temperature_C": 13.3,
+      "observed_at": "2026-06-21T02:36:00Z",
+      "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_temperature&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard",
+      "metrics": {
+        "air_temperature_C": {
+          "key": "air_temperature_C",
+          "label": "Air temp",
+          "unit": "\u00b0C",
+          "value": 17.8,
+          "observed_at": "2026-06-21T00:50:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46125.txt",
+          "station_id": "46125",
+          "station_name": "Hood Canal (NDBC 46125)",
+          "provider": "NOAA NDBC",
+          "station_lat": 47.907,
+          "station_lon": -122.627,
+          "distance_km": 13.8
+        },
+        "wind_speed_m_s": {
+          "key": "wind_speed_m_s",
+          "label": "Wind",
+          "unit": "m/s",
+          "value": 2.0,
+          "observed_at": "2026-06-21T00:50:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46125.txt",
+          "station_id": "46125",
+          "station_name": "Hood Canal (NDBC 46125)",
+          "provider": "NOAA NDBC",
+          "station_lat": 47.907,
+          "station_lon": -122.627,
+          "distance_km": 13.8
+        },
+        "wind_direction_deg": {
+          "key": "wind_direction_deg",
+          "label": "Wind dir",
+          "unit": "\u00b0",
+          "value": 140.0,
+          "observed_at": "2026-06-21T00:50:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46125.txt",
+          "station_id": "46125",
+          "station_name": "Hood Canal (NDBC 46125)",
+          "provider": "NOAA NDBC",
+          "station_lat": 47.907,
+          "station_lon": -122.627,
+          "distance_km": 13.8
+        },
+        "water_temperature_C": {
+          "key": "water_temperature_C",
+          "label": "Water temp",
+          "unit": "\u00b0C",
+          "value": 13.3,
+          "observed_at": "2026-06-21T02:36:00Z",
+          "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_temperature&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard",
+          "station_id": "9444900",
+          "station_name": "Port Townsend",
+          "provider": "NOAA CO-OPS",
+          "station_lat": 48.1112,
+          "station_lon": -122.7597,
+          "distance_km": 33.8
+        },
+        "air_pressure_mb": {
+          "key": "air_pressure_mb",
+          "label": "Pressure",
+          "unit": "mb",
+          "value": 1015.8,
+          "observed_at": "2026-06-21T02:36:00Z",
+          "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=air_pressure&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard",
+          "station_id": "9444900",
+          "station_name": "Port Townsend",
+          "provider": "NOAA CO-OPS",
+          "station_lat": 48.1112,
+          "station_lon": -122.7597,
+          "distance_km": 33.8
+        },
+        "wind_gust_m_s": {
+          "key": "wind_gust_m_s",
+          "label": "Gust",
+          "unit": "m/s",
+          "value": 1.7,
+          "observed_at": "2026-06-21T02:36:00Z",
+          "source_url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=wind&date=latest&station=9444900&units=metric&time_zone=gmt&format=json&application=mock-farm-dashboard",
+          "station_id": "9444900",
+          "station_name": "Port Townsend",
+          "provider": "NOAA CO-OPS",
+          "station_lat": 48.1112,
+          "station_lon": -122.7597,
+          "distance_km": 33.8
+        },
+        "chlorophyll_fluorescence": {
+          "key": "chlorophyll_fluorescence",
+          "label": "Chlorophyll",
+          "unit": "RFU",
+          "value": null,
+          "observed_at": null,
+          "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
+          "station_id": null,
+          "station_name": "Hood Canal ORCA moorings (Twanoh, Hoodsport, Dabob Bay)",
+          "provider": "NANOOS Shellfish Growers / UW ORCA",
+          "status": "source-matched",
+          "note": "Closest shellfish-focused in-situ chlorophyll match for Thorndyke/Hood Canal."
+        }
+      },
+      "source_candidates": [
+        "46125",
+        "9444900"
+      ]
     },
     {
       "site": "Sequim Bay",
@@ -29,9 +178,113 @@
       "station_lat": 48.333,
       "station_lon": -123.165,
       "distance_km": 30.9,
-      "temperature_C": 11.5,
-      "observed_at": "2026-06-21T01:10:00Z",
-      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt"
+      "temperature_C": 11.6,
+      "observed_at": "2026-06-21T02:10:00Z",
+      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+      "metrics": {
+        "air_pressure_mb": {
+          "key": "air_pressure_mb",
+          "label": "Pressure",
+          "unit": "mb",
+          "value": 1016.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "air_temperature_C": {
+          "key": "air_temperature_C",
+          "label": "Air temp",
+          "unit": "\u00b0C",
+          "value": 13.5,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "water_temperature_C": {
+          "key": "water_temperature_C",
+          "label": "Water temp",
+          "unit": "\u00b0C",
+          "value": 11.6,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "wind_speed_m_s": {
+          "key": "wind_speed_m_s",
+          "label": "Wind",
+          "unit": "m/s",
+          "value": 4.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "wind_gust_m_s": {
+          "key": "wind_gust_m_s",
+          "label": "Gust",
+          "unit": "m/s",
+          "value": 5.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "wind_direction_deg": {
+          "key": "wind_direction_deg",
+          "label": "Wind dir",
+          "unit": "\u00b0",
+          "value": 250.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 30.9
+        },
+        "chlorophyll_fluorescence": {
+          "key": "chlorophyll_fluorescence",
+          "label": "Chlorophyll",
+          "unit": "RFU",
+          "value": null,
+          "observed_at": null,
+          "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
+          "station_id": null,
+          "station_name": "Padilla Bay / Bayview water-quality stations",
+          "provider": "NANOOS Shellfish Growers / Padilla Bay NERR",
+          "status": "source-matched",
+          "note": "Use as the nearest NANOOS shellfish chlorophyll source until a Sequim-specific public station is available."
+        }
+      },
+      "source_candidates": [
+        "46088",
+        "9444090",
+        "9444900"
+      ]
     },
     {
       "site": "Goose Point",
@@ -41,9 +294,70 @@
       "station_lat": 46.858,
       "station_lon": -124.244,
       "distance_km": 39.5,
-      "temperature_C": 13.8,
-      "observed_at": "2026-06-21T00:56:00Z",
-      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46211.txt"
+      "temperature_C": 13.5,
+      "observed_at": "2026-06-21T01:56:00Z",
+      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46211.txt",
+      "metrics": {
+        "wave_height_m": {
+          "key": "wave_height_m",
+          "label": "Wave height",
+          "unit": "m",
+          "value": 2.0,
+          "observed_at": "2026-06-21T01:56:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46211.txt",
+          "station_id": "46211",
+          "station_name": "Grays Harbor (NDBC 46211)",
+          "provider": "NOAA NDBC",
+          "station_lat": 46.858,
+          "station_lon": -124.244,
+          "distance_km": 39.5
+        },
+        "water_temperature_C": {
+          "key": "water_temperature_C",
+          "label": "Water temp",
+          "unit": "\u00b0C",
+          "value": 13.5,
+          "observed_at": "2026-06-21T01:56:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46211.txt",
+          "station_id": "46211",
+          "station_name": "Grays Harbor (NDBC 46211)",
+          "provider": "NOAA NDBC",
+          "station_lat": 46.858,
+          "station_lon": -124.244,
+          "distance_km": 39.5
+        },
+        "air_temperature_C": {
+          "key": "air_temperature_C",
+          "label": "Air temp",
+          "unit": "\u00b0C",
+          "value": 13.9,
+          "observed_at": "2026-06-21T02:00:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46243.txt",
+          "station_id": "46243",
+          "station_name": "Grays Harbor Entrance (NDBC 46243)",
+          "provider": "NOAA NDBC",
+          "station_lat": 46.857,
+          "station_lon": -124.128,
+          "distance_km": 33.3
+        },
+        "chlorophyll_fluorescence": {
+          "key": "chlorophyll_fluorescence",
+          "label": "Chlorophyll",
+          "unit": "RFU",
+          "value": null,
+          "observed_at": null,
+          "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
+          "station_id": null,
+          "station_name": "Willapa Bay / Bay Center monitoring sites",
+          "provider": "NANOOS Shellfish Growers / WA Ecology / Pacific Shellfish Institute",
+          "status": "source-matched",
+          "note": "Closest shellfish-focused chlorophyll source for Palix River / Willapa Bay."
+        }
+      },
+      "source_candidates": [
+        "46211",
+        "46243"
+      ]
     },
     {
       "site": "Westcott",
@@ -53,9 +367,112 @@
       "station_lat": 48.333,
       "station_lon": -123.165,
       "distance_km": 27.7,
-      "temperature_C": 11.5,
-      "observed_at": "2026-06-21T01:10:00Z",
-      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt"
+      "temperature_C": 11.6,
+      "observed_at": "2026-06-21T02:10:00Z",
+      "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+      "metrics": {
+        "air_pressure_mb": {
+          "key": "air_pressure_mb",
+          "label": "Pressure",
+          "unit": "mb",
+          "value": 1016.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "air_temperature_C": {
+          "key": "air_temperature_C",
+          "label": "Air temp",
+          "unit": "\u00b0C",
+          "value": 13.5,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "water_temperature_C": {
+          "key": "water_temperature_C",
+          "label": "Water temp",
+          "unit": "\u00b0C",
+          "value": 11.6,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "wind_speed_m_s": {
+          "key": "wind_speed_m_s",
+          "label": "Wind",
+          "unit": "m/s",
+          "value": 4.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "wind_gust_m_s": {
+          "key": "wind_gust_m_s",
+          "label": "Gust",
+          "unit": "m/s",
+          "value": 5.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "wind_direction_deg": {
+          "key": "wind_direction_deg",
+          "label": "Wind dir",
+          "unit": "\u00b0",
+          "value": 250.0,
+          "observed_at": "2026-06-21T02:10:00Z",
+          "source_url": "https://www.ndbc.noaa.gov/data/realtime2/46088.txt",
+          "station_id": "46088",
+          "station_name": "New Dungeness (NDBC 46088)",
+          "provider": "NOAA NDBC",
+          "station_lat": 48.333,
+          "station_lon": -123.165,
+          "distance_km": 27.7
+        },
+        "chlorophyll_fluorescence": {
+          "key": "chlorophyll_fluorescence",
+          "label": "Chlorophyll",
+          "unit": "RFU",
+          "value": null,
+          "observed_at": null,
+          "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
+          "station_id": null,
+          "station_name": "Padilla Bay / Bayview water-quality stations",
+          "provider": "NANOOS Shellfish Growers / Padilla Bay NERR",
+          "status": "source-matched",
+          "note": "Regional Salish Sea chlorophyll source; pair with nearby NDBC/CO-OPS met data for San Juan sites."
+        }
+      },
+      "source_candidates": [
+        "46088",
+        "9444900"
+      ]
     }
   ]
 }

@@ -38,6 +38,7 @@ Data source: `src/data/mockShellfishData.js` (960 records generated programmatic
 - Interactive filters (site, treatment, metric, year)
 - Summary statistic cards
 - Time-series line chart
+- Scheduled live environmental snapshot from matched NOAA and NANOOS shellfish sources
 - Treatment comparison grouped bar chart
 - Site comparison bar chart
 - Sortable, searchable, paginated data table
@@ -69,6 +70,12 @@ npm run build
 ```
 
 Output is written to the `dist/` directory.
+
+Refresh the near-live environmental snapshot locally:
+
+```bash
+npm run build:live-environment
+```
 
 Preview the production build locally:
 

@@ -478,6 +478,34 @@ body {
   color: var(--color-text-muted);
 }
 
+.live-environment-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0.15rem 0;
+}
+
+.live-environment-metric {
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.live-environment-metric dt {
+  margin-bottom: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.live-environment-metric dd {
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
 .live-temperature-card a {
   width: fit-content;
   font-size: 0.82rem;
@@ -1055,6 +1083,8 @@ body {
   .chart-caption,
   .summary-detail,
   .live-temperature-meta,
+  .live-environment-metric dt,
+  .live-environment-metric dd,
   .chart-source-note {
     font-size: 10px;
   }
