@@ -1026,6 +1026,17 @@ body {
   background: var(--color-surface);
 }
 
+.dashboard-footer a {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dashboard-footer a:hover,
+.dashboard-footer a:focus {
+  text-decoration: underline;
+}
+
 /* Map page */
 .map-page {
   gap: 1rem;

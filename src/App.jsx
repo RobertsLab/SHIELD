@@ -22,7 +22,14 @@ export default function App() {
             SHIELD · Shellfish Hardening and Integrated Environmental
             Longitudinal Dashboard · Real field data — RobertsLab
             project-gigas-conditioning + Baywater 10K-Seed ·{' '}
-            {mockShellfishData.length.toLocaleString()} observation records
+            {mockShellfishData.length.toLocaleString()} observation records ·{' '}
+            <a
+              href="https://github.com/sr320/mock-farm-dashboard-03"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub repository
+            </a>
           </p>
         </footer>
       </div>
