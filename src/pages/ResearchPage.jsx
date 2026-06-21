@@ -39,10 +39,22 @@ const researchers = [
       'Leads the Washington Sea Grant collaborative partnership addressing oyster aquaculture mass mortalities through monitoring, husbandry, and workforce development.',
   },
   {
+    name: 'Mackenzie Gavery',
+    role: 'NOAA collaborator',
+    description:
+      'Collaborates on oyster resilience research connecting environmental conditioning, field performance, and shellfish aquaculture outcomes.',
+  },
+  {
     name: 'Grace Leauchtenberger',
     role: 'Graduate student researcher',
     description:
       'Graduate student contributing to the Washington Sea Grant project and associated research activities.',
+  },
+  {
+    name: 'Matt George',
+    role: 'Former postdoctoral researcher',
+    description:
+      'Helped launch the early stages of the oyster conditioning and field resilience research that informed the current project.',
   },
   {
     name: 'Megan Ewing',
@@ -58,23 +70,26 @@ const researchers = [
   },
 ];
 
-const fundingDetails = [
+const fundingAwards = [
   {
-    label: 'Award',
-    value:
+    agency: 'Washington Sea Grant',
+    status: 'Active support',
+    title:
       'A collaborative partnership to address mass mortalities in oyster aquaculture through improved field monitoring, husbandry practices, and workforce development',
+    lead: 'Emily Carrington',
+    researchLead: 'Ariana Huffmyer',
+    summary:
+      'This collaborative partnership aims to support sustainable expansion of oyster aquaculture in Washington State by reducing mass mortality events linked to OsHV-1 infection and extreme climate events. The work combines environmental monitoring, oyster mortality data, hatchery stress-priming trials, and workforce training.',
   },
   {
-    label: 'Funding agency',
-    value: 'Washington Sea Grant',
-  },
-  {
-    label: 'Award lead',
-    value: 'Emily Carrington',
-  },
-  {
-    label: 'Research lead',
-    value: 'Ariana Huffmyer',
+    agency: 'USDA',
+    status: 'Recently completed award',
+    title:
+      'Improved climate resilience in oysters through optimization of hatchery-based environmental conditioning practices',
+    lead: 'Project team with academic, industry, and tribal stakeholders',
+    researchLead: 'Ariana Huffmyer and Steven Roberts',
+    summary:
+      'This work focused on improving oyster stock resilience by optimizing hatchery-based conditioning practices. Research tested early-life stage environmental conditioning and broodstock husbandry to evaluate developmental and transgenerational plasticity as routes to carry-over benefits during later grow-out.',
   },
 ];
 
@@ -111,8 +126,8 @@ export default function ResearchPage() {
           <p className="chart-caption">
             The research is led by Ariana Huffmyer with Steven Roberts, with
             Washington Sea Grant project leadership from Emily Carrington and
-            student researchers contributing to oyster, clam, and cockle field
-            studies.
+            contributions from postdoctoral, graduate, and undergraduate
+            researchers across oyster, clam, and cockle field studies.
           </p>
         </div>
 
@@ -142,32 +157,44 @@ export default function ResearchPage() {
             <h2 className="section-title">Funding and Acknowledgments</h2>
           </div>
           <p className="chart-caption">
-            This page summarizes the Washington Sea Grant-supported
-            collaborative partnership and can be updated with award numbers,
-            partner names, and required acknowledgement language.
+            This work is supported by Washington Sea Grant and builds on a
+            recently completed USDA award focused on hatchery-based oyster
+            conditioning for climate resilience.
           </p>
         </div>
 
-        <dl className="funding-grid">
-          {fundingDetails.map((item) => (
-            <div key={item.label}>
-              <dt>{item.label}</dt>
-              <dd>{item.value}</dd>
-            </div>
+        <div className="funding-award-list">
+          {fundingAwards.map((award) => (
+            <article className="funding-award" key={award.title}>
+              <div className="funding-award-header">
+                <div>
+                  <p className="research-kicker">{award.status}</p>
+                  <h3>{award.agency}</h3>
+                </div>
+              </div>
+              <p className="funding-award-title">{award.title}</p>
+              <dl className="funding-award-meta">
+                <div>
+                  <dt>Award lead</dt>
+                  <dd>{award.lead}</dd>
+                </div>
+                <div>
+                  <dt>Research lead</dt>
+                  <dd>{award.researchLead}</dd>
+                </div>
+              </dl>
+              <p>{award.summary}</p>
+            </article>
           ))}
-        </dl>
+        </div>
 
         <div className="acknowledgment-box">
-          <h3>Washington Sea Grant Summary</h3>
+          <h3>Research Context</h3>
           <p>
-            The collective goal is to support sustainable expansion of oyster
-            aquaculture in Washington State by reducing mass mortality events
-            that result from interactions between OsHV-1 infection and extreme
-            climate events. Continuous environmental monitoring paired with
-            oyster mortality data will support climate risk assessment for
-            commercial growing areas, while hatchery stress-priming trials and
-            industry training activities translate research into practical farm
-            and workforce outcomes.
+            Together, these awards support a connected research program on
+            oyster climate resilience, from conditioning larvae and broodstock
+            in hatchery settings to evaluating survival and performance after
+            deployment at commercial grow-out sites.
           </p>
         </div>
       </section>
