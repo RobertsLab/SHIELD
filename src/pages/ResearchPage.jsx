@@ -1,21 +1,21 @@
 const researchThemes = [
   {
-    title: 'Mass Mortality Risk',
+    title: 'Improve Shellfish Resilience Through Conditioning',
     label: 'Objective 1',
     body:
-      'Determine the susceptibility of Washington shellfish farms to heatwaves by monitoring air and water temperatures experienced by oysters during grow-out across Salish Sea and Willapa Bay farms.',
+      'Test whether hatchery or laboratory stress-priming treatments can improve tolerance to heat and other environmental stressors in aquaculture shellfish.',
   },
   {
-    title: 'Climate-Resilient Husbandry',
+    title: 'Link Hatchery Conditioning to Field Performance',
     label: 'Objective 2',
     body:
-      'Develop a commercially viable hatchery protocol that improves oyster heat tolerance by testing stress-primed spat from OsHV-1 resistant Pacific oyster families in farm outplants.',
+      'Evaluate how laboratory and hatchery-based priming treatments translate into survival, growth, and resilience after deployment at aquaculture field sites.',
   },
   {
-    title: 'Workforce Development',
+    title: 'Develop Decision-Support Tools for Growers and Partners',
     label: 'Objective 3',
     body:
-      'Build an enhanced training curriculum for shellfish industry technicians, using OsHV-1 and heat waves as case studies with students from Bellingham Technical College.',
+      'Integrate environmental monitoring, treatment histories, and field performance data into dashboards and summaries that help shellfish growers assess risk and husbandry options.',
   },
 ];
 
