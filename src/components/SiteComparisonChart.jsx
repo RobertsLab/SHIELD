@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  ErrorBar,
 } from 'recharts';
 
 const SITE_COLORS = {
@@ -25,6 +26,7 @@ const VIEW_CONFIG = {
 
 export default function SiteComparisonChart({ growthData, survivalData, tempData }) {
   const [view, setView] = useState('growth');
+  const [showErrorBars, setShowErrorBars] = useState(false);
 
   const dataMap = {
     growth: growthData,
@@ -34,6 +36,7 @@ export default function SiteComparisonChart({ growthData, survivalData, tempData
   const data = dataMap[view];
   const config = VIEW_CONFIG[view];
   const yLabel = `${config.label} (${config.unit})`;
+  const canShowErrorBars = data?.some((row) => row.error != null);
 
   if (!data || data.length === 0) {
     return (
@@ -48,17 +51,29 @@ export default function SiteComparisonChart({ growthData, survivalData, tempData
     <section className="chart-section card">
       <div className="chart-header-row">
         <h2 className="section-title">Site Comparison</h2>
-        <div className="toggle-group" role="group" aria-label="Site comparison metric">
-          {Object.keys(VIEW_CONFIG).map((key) => (
-            <button
-              key={key}
-              type="button"
-              className={view === key ? 'toggle active' : 'toggle'}
-              onClick={() => setView(key)}
-            >
-              {VIEW_CONFIG[key].label}
-            </button>
-          ))}
+        <div className="chart-controls">
+          <div className="toggle-group" role="group" aria-label="Site comparison metric">
+            {Object.keys(VIEW_CONFIG).map((key) => (
+              <button
+                key={key}
+                type="button"
+                className={view === key ? 'toggle active' : 'toggle'}
+                onClick={() => setView(key)}
+              >
+                {VIEW_CONFIG[key].label}
+              </button>
+            ))}
+          </div>
+          {canShowErrorBars && (
+            <label className="checkbox-control no-print">
+              <input
+                type="checkbox"
+                checked={showErrorBars}
+                onChange={(event) => setShowErrorBars(event.target.checked)}
+              />
+              Show error bars
+            </label>
+          )}
         </div>
       </div>
       <p className="chart-caption">{config.caption}</p>
@@ -88,6 +103,15 @@ export default function SiteComparisonChart({ growthData, survivalData, tempData
               formatter={(value) => [`${value} ${config.unit}`, config.label]}
             />
             <Bar dataKey="value" name={config.label} radius={[4, 4, 0, 0]}>
+              {showErrorBars && canShowErrorBars && (
+                <ErrorBar
+                  dataKey="error"
+                  direction="y"
+                  width={4}
+                  stroke="#334155"
+                  strokeWidth={1.5}
+                />
+              )}
               {data.map((entry) => (
                 <Cell key={entry.site} fill={SITE_COLORS[entry.site] ?? '#94a3b8'} />
               ))}

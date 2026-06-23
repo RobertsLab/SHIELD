@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   LineChart,
   Line,
@@ -7,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ErrorBar,
 } from 'recharts';
 
 const METRIC_LABELS = {
@@ -16,6 +18,7 @@ const METRIC_LABELS = {
 };
 
 export default function TimeSeriesChart({ data, metric }) {
+  const [showErrorBars, setShowErrorBars] = useState(false);
   const yLabel = METRIC_LABELS[metric] ?? metric;
   const unit = data.unit ?? '';
 
@@ -29,10 +32,23 @@ export default function TimeSeriesChart({ data, metric }) {
   }
 
   const tickInterval = Math.max(1, Math.floor(data.series.length / 12));
+  const canShowErrorBars = data.series.some((point) => point.error != null);
 
   return (
     <section className="chart-section card">
-      <h2 className="section-title">Time Series — {metric}</h2>
+      <div className="chart-header-row">
+        <h2 className="section-title">Time Series — {metric}</h2>
+        {canShowErrorBars && (
+          <label className="checkbox-control no-print">
+            <input
+              type="checkbox"
+              checked={showErrorBars}
+              onChange={(event) => setShowErrorBars(event.target.checked)}
+            />
+            Show error bars
+          </label>
+        )}
+      </div>
       <p className="chart-caption">
         Mean {metric.toLowerCase()} across filtered cohorts at each field
         assessment{unit ? ` (${unit})` : ''}
@@ -76,7 +92,17 @@ export default function TimeSeriesChart({ data, metric }) {
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 5 }}
-            />
+            >
+              {showErrorBars && canShowErrorBars && (
+                <ErrorBar
+                  dataKey="error"
+                  direction="y"
+                  width={4}
+                  stroke="#2563eb"
+                  strokeWidth={1.5}
+                />
+              )}
+            </Line>
           </LineChart>
         </ResponsiveContainer>
       </div>

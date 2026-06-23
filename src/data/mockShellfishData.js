@@ -84,6 +84,23 @@ function meanOf(rows, key) {
 }
 
 const round1 = (n) => (n == null ? null : Math.round(n * 10) / 10);
+const round2 = (n) => (n == null ? null : Math.round(n * 100) / 100);
+
+function summarizeValues(values) {
+  const cleanValues = values.filter((v) => v != null && !Number.isNaN(v));
+  const count = cleanValues.length;
+  if (count === 0) return { mean: null, error: null, count: 0 };
+
+  const mean = cleanValues.reduce((sum, value) => sum + value, 0) / count;
+  if (count < 2) return { mean, error: null, count };
+
+  const variance =
+    cleanValues.reduce((sum, value) => sum + (value - mean) ** 2, 0) /
+    (count - 1);
+  const standardError = Math.sqrt(variance) / Math.sqrt(count);
+
+  return { mean, error: standardError, count };
+}
 
 /** Latest row per site|treatment that has a non-null value for `key`. */
 function latestWithValue(rows, key) {
@@ -164,11 +181,16 @@ export function getTimeSeriesData(filtered, metric) {
 
   const series = [...grouped.values()]
     .sort((a, b) => a.date.localeCompare(b.date))
-    .map((g) => ({
-      date: g.date,
-      label: g.label,
-      value: round1(g.values.reduce((s, v) => s + v, 0) / g.values.length),
-    }));
+    .map((g) => {
+      const summary = summarizeValues(g.values);
+      return {
+        date: g.date,
+        label: g.label,
+        value: round1(summary.mean),
+        error: round2(summary.error),
+        count: summary.count,
+      };
+    });
 
   return { series, unit, metricKey };
 }
@@ -184,7 +206,11 @@ export function getTreatmentComparisonData(filtered, metric = 'survival') {
   const bySite = {};
   for (const row of rows) {
     if (!bySite[row.site]) bySite[row.site] = { site: row.site };
-    bySite[row.site][row.treatment] = round1(row[key]);
+    const values = row.values ?? [row[key]];
+    const summary = summarizeValues(values);
+    bySite[row.site][row.treatment] = round1(summary.mean);
+    bySite[row.site][`${row.treatment}Error`] = round2(summary.error);
+    bySite[row.site][`${row.treatment}Count`] = summary.count;
   }
   return Object.values(bySite);
 }
@@ -195,14 +221,22 @@ function aggregateMean(filtered, key) {
   for (const row of filtered) {
     if (row[key] == null) continue;
     const k = `${row.site}|${row.treatment}`;
-    (grouped[k] ??= { site: row.site, treatment: row.treatment, sum: 0, count: 0 });
+    (grouped[k] ??= {
+      site: row.site,
+      treatment: row.treatment,
+      sum: 0,
+      count: 0,
+      values: [],
+    });
     grouped[k].sum += row[key];
     grouped[k].count += 1;
+    grouped[k].values.push(row[key]);
   }
   return Object.values(grouped).map((g) => ({
     site: g.site,
     treatment: g.treatment,
     [key]: g.sum / g.count,
+    values: g.values,
   }));
 }
 
@@ -218,15 +252,22 @@ export function getSiteComparisonData(filtered, metric = 'growth') {
   const bySite = {};
   for (const row of rows) {
     if (row[key] == null) continue;
-    (bySite[row.site] ??= { sum: 0, count: 0 });
-    bySite[row.site].sum += row[key];
-    bySite[row.site].count += 1;
+    (bySite[row.site] ??= { values: [] });
+    bySite[row.site].values.push(row[key]);
   }
 
-  return SITES.map((site) => ({
-    site,
-    value: bySite[site] ? round1(bySite[site].sum / bySite[site].count) : null,
-  }));
+  return SITES.map((site) => {
+    const summary = bySite[site]
+      ? summarizeValues(bySite[site].values)
+      : { mean: null, error: null, count: 0 };
+
+    return {
+      site,
+      value: round1(summary.mean),
+      error: round2(summary.error),
+      count: summary.count,
+    };
+  });
 }
 
 export function getSiteGeographicSummaries(data) {

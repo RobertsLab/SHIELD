@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ErrorBar,
 } from 'recharts';
 import { TREATMENTS } from '../data/mockShellfishData';
 
@@ -21,9 +22,13 @@ const TREATMENT_COLORS = {
 
 export default function TreatmentComparisonChart({ survivalData, growthData }) {
   const [view, setView] = useState('survival');
+  const [showErrorBars, setShowErrorBars] = useState(false);
   const data = view === 'survival' ? survivalData : growthData;
   const yLabel =
     view === 'survival' ? 'Final survival (%)' : 'Mean growth (mm)';
+  const canShowErrorBars = data?.some((row) =>
+    TREATMENTS.some((treatment) => row[`${treatment}Error`] != null)
+  );
 
   if (!data || data.length === 0) {
     return (
@@ -38,21 +43,33 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
     <section className="chart-section card">
       <div className="chart-header-row">
         <h2 className="section-title">Treatment Comparison by Site</h2>
-        <div className="toggle-group" role="group" aria-label="Comparison metric">
-          <button
-            type="button"
-            className={view === 'survival' ? 'toggle active' : 'toggle'}
-            onClick={() => setView('survival')}
-          >
-            Final Survival
-          </button>
-          <button
-            type="button"
-            className={view === 'growth' ? 'toggle active' : 'toggle'}
-            onClick={() => setView('growth')}
-          >
-            Mean Growth
-          </button>
+        <div className="chart-controls">
+          <div className="toggle-group" role="group" aria-label="Comparison metric">
+            <button
+              type="button"
+              className={view === 'survival' ? 'toggle active' : 'toggle'}
+              onClick={() => setView('survival')}
+            >
+              Final Survival
+            </button>
+            <button
+              type="button"
+              className={view === 'growth' ? 'toggle active' : 'toggle'}
+              onClick={() => setView('growth')}
+            >
+              Mean Growth
+            </button>
+          </div>
+          {canShowErrorBars && (
+            <label className="checkbox-control no-print">
+              <input
+                type="checkbox"
+                checked={showErrorBars}
+                onChange={(event) => setShowErrorBars(event.target.checked)}
+              />
+              Show error bars
+            </label>
+          )}
         </div>
       </div>
       <p className="chart-caption">
@@ -92,7 +109,17 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
                 name={t}
                 fill={TREATMENT_COLORS[t]}
                 radius={[3, 3, 0, 0]}
-              />
+              >
+                {showErrorBars && canShowErrorBars && (
+                  <ErrorBar
+                    dataKey={`${t}Error`}
+                    direction="y"
+                    width={4}
+                    stroke={TREATMENT_COLORS[t]}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </Bar>
             ))}
           </BarChart>
         </ResponsiveContainer>
