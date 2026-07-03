@@ -51,8 +51,8 @@ export default function SiteMap({ sites, selectedSite, onSelectSite }) {
                   <p className="map-popup-region">{site.region}</p>
                   <dl className="map-popup-stats">
                     <div>
-                      <dt>Mean growth</dt>
-                      <dd>{site.meanGrowth} mm</dd>
+                      <dt>Mean growth volume</dt>
+                      <dd>{site.meanGrowth?.toLocaleString() ?? '—'}</dd>
                     </div>
                     <div>
                       <dt>Mean temp</dt>

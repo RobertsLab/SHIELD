@@ -19,7 +19,11 @@ const SITE_COLORS = {
 };
 
 const VIEW_CONFIG = {
-  growth: { label: 'Mean Growth', unit: 'mm', caption: 'Average shell height (mm) by site' },
+  growth: {
+    label: 'Growth Volume',
+    unit: 'predicted volume',
+    caption: 'Average predicted oyster volume by site',
+  },
   survival: { label: 'Final Survival', unit: '%', caption: 'Mean end-of-period survival (%) by site' },
   temperature: { label: 'Mean Temperature', unit: '°C', caption: 'Average water temperature (°C) by site' },
 };

@@ -1,9 +1,12 @@
 export default function SummaryCards({ stats }) {
   const cards = [
     {
-      label: 'Mean Growth',
-      value: stats.meanGrowth != null ? `${stats.meanGrowth} mm` : '—',
-      detail: 'Shell height across filtered records',
+      label: 'Mean Growth Volume',
+      value:
+        stats.meanGrowth != null
+          ? stats.meanGrowth.toLocaleString()
+          : '—',
+      detail: 'Predicted volume across filtered oysters',
     },
     {
       label: 'Mean Temperature',

@@ -11,8 +11,12 @@
  * unchanged. See docs/DATA_FORMAT.md for the schema and provenance.
  */
 import realData from './realObservations.json';
+import growthData from './growthObservations.json';
 
-export const realDataMeta = realData.meta;
+export const realDataMeta = {
+  ...realData.meta,
+  growth: growthData.meta,
+};
 
 /** Geographic metadata for the real C. gigas outplant sites. */
 export const SITE_LOCATIONS = {
@@ -54,17 +58,40 @@ export const MAP_CENTER = { lat: 47.6, lng: -123.1 };
 export const MAP_ZOOM = 7;
 
 /** Controlled vocabularies — derived from the real dataset. */
-export const SITES = Object.keys(SITE_LOCATIONS).filter((s) =>
-  realData.sites.includes(s)
+export const SITES = Object.keys(SITE_LOCATIONS).filter(
+  (s) => realData.sites.includes(s) || growthData.sites.includes(s)
 );
-export const TREATMENTS = realData.treatments;
-export const YEARS = realData.years;
-export const METRICS = ['Growth', 'Temperature', 'Survival'];
 
-export const mockShellfishData = realData.observations;
+const TREATMENT_ORDER = [
+  'Control',
+  'Heat primed',
+  'Freshwater primed',
+  'Immune primed',
+  'Combined stress primed',
+  'Treated',
+];
+const treatmentsPresent = new Set([
+  ...realData.treatments,
+  ...growthData.treatments,
+]);
+export const TREATMENTS = TREATMENT_ORDER.filter((t) => treatmentsPresent.has(t));
+
+export const YEARS = [...new Set([...realData.years, ...growthData.years])].sort();
+export const METRICS = ['Growth Volume', 'Temperature', 'Survival'];
+
+export const mockShellfishData = [
+  ...realData.observations.map((row) => ({
+    ...row,
+    tag: row.tag ?? null,
+    oyster_number: row.oyster_number ?? null,
+    growth_volume: null,
+  })),
+  ...growthData.observations,
+];
 
 const METRIC_KEYS = {
-  Growth: 'growth_mm',
+  Growth: 'growth_volume',
+  'Growth Volume': 'growth_volume',
   Temperature: 'temperature_C',
   Survival: 'survival_percent',
 };
@@ -102,6 +129,11 @@ function summarizeValues(values) {
   return { mean, error: standardError, count };
 }
 
+function formatMean(value, key) {
+  if (value == null) return null;
+  return key === 'growth_volume' ? Math.round(value) : round1(value);
+}
+
 /** Latest row per site|treatment that has a non-null value for `key`. */
 function latestWithValue(rows, key) {
   const latest = new Map();
@@ -135,7 +167,7 @@ export function computeSummaryStats(filtered) {
     };
   }
 
-  const meanGrowth = meanOf(filtered, 'growth_mm');
+  const meanGrowth = meanOf(filtered, 'growth_volume');
   const meanTemp = meanOf(filtered, 'temperature_C');
 
   const finalRows = latestWithValue(filtered, 'survival_percent');
@@ -153,7 +185,7 @@ export function computeSummaryStats(filtered) {
       .sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
 
   return {
-    meanGrowth: round1(meanGrowth),
+    meanGrowth: formatMean(meanGrowth, 'growth_volume'),
     meanTemp: round1(meanTemp),
     finalSurvival: round1(finalSurvival),
     bestTreatment: finalRows.length ? topKey(byTreatment) : '—',
@@ -163,7 +195,12 @@ export function computeSummaryStats(filtered) {
 
 export function getTimeSeriesData(filtered, metric) {
   const metricKey = METRIC_KEYS[metric] ?? 'survival_percent';
-  const unit = metric === 'Growth' ? 'mm' : metric === 'Temperature' ? '°C' : '%';
+  const unit =
+    metric === 'Growth' || metric === 'Growth Volume'
+      ? 'predicted volume'
+      : metric === 'Temperature'
+        ? '°C'
+        : '%';
 
   const grouped = new Map();
   for (const row of filtered) {
@@ -172,7 +209,7 @@ export function getTimeSeriesData(filtered, metric) {
     if (!grouped.has(key)) {
       grouped.set(key, {
         date: key,
-        label: `${row.month} ${row.year.replace('Year ', 'Y')}`,
+        label: `${row.month} ${row.year}`,
         values: [],
       });
     }
@@ -186,8 +223,8 @@ export function getTimeSeriesData(filtered, metric) {
       return {
         date: g.date,
         label: g.label,
-        value: round1(summary.mean),
-        error: round2(summary.error),
+        value: formatMean(summary.mean, metricKey),
+        error: formatMean(summary.error, metricKey),
         count: summary.count,
       };
     });
@@ -197,7 +234,7 @@ export function getTimeSeriesData(filtered, metric) {
 
 export function getTreatmentComparisonData(filtered, metric = 'survival') {
   const isSurvival = metric === 'survival';
-  const key = isSurvival ? 'survival_percent' : 'growth_mm';
+  const key = isSurvival ? 'survival_percent' : 'growth_volume';
 
   const rows = isSurvival
     ? latestWithValue(filtered, key)
@@ -208,8 +245,8 @@ export function getTreatmentComparisonData(filtered, metric = 'survival') {
     if (!bySite[row.site]) bySite[row.site] = { site: row.site };
     const values = row.values ?? [row[key]];
     const summary = summarizeValues(values);
-    bySite[row.site][row.treatment] = round1(summary.mean);
-    bySite[row.site][`${row.treatment}Error`] = round2(summary.error);
+    bySite[row.site][row.treatment] = formatMean(summary.mean, key);
+    bySite[row.site][`${row.treatment}Error`] = formatMean(summary.error, key);
     bySite[row.site][`${row.treatment}Count`] = summary.count;
   }
   return Object.values(bySite);
@@ -242,7 +279,7 @@ function aggregateMean(filtered, key) {
 
 export function getSiteComparisonData(filtered, metric = 'growth') {
   const configs = {
-    growth: { key: 'growth_mm', useFinal: false },
+    growth: { key: 'growth_volume', useFinal: false },
     survival: { key: 'survival_percent', useFinal: true },
     temperature: { key: 'temperature_C', useFinal: false },
   };
@@ -263,8 +300,8 @@ export function getSiteComparisonData(filtered, metric = 'growth') {
 
     return {
       site,
-      value: round1(summary.mean),
-      error: round2(summary.error),
+      value: formatMean(summary.mean, key),
+      error: formatMean(summary.error, key),
       count: summary.count,
     };
   });
@@ -281,7 +318,7 @@ export function getSiteGeographicSummaries(data) {
     return {
       site,
       ...location,
-      meanGrowth: round1(meanOf(siteRows, 'growth_mm')),
+      meanGrowth: formatMean(meanOf(siteRows, 'growth_volume'), 'growth_volume'),
       meanTemp: round1(meanOf(siteRows, 'temperature_C')),
       finalSurvival: round1(meanOf(siteFinal, 'survival_percent')),
       recordCount: siteRows.length,

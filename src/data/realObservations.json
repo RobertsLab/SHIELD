@@ -32,15 +32,15 @@
 "Combined stress primed"
 ],
 "years": [
-"Year 1",
-"Year 2",
-"Year 3"
+"2024",
+"2025",
+"2026"
 ],
 "observations": [
 {
 "id": "BA-COMB-2025-08-20-0",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Baywater",
@@ -56,7 +56,7 @@
 {
 "id": "BA-CONT-2025-08-20-1",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Baywater",
@@ -72,7 +72,7 @@
 {
 "id": "BA-FRES-2025-08-20-2",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Baywater",
@@ -88,7 +88,7 @@
 {
 "id": "BA-HEAT-2025-08-20-3",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Baywater",
@@ -104,7 +104,7 @@
 {
 "id": "BA-IMMU-2025-08-20-4",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Baywater",
@@ -120,7 +120,7 @@
 {
 "id": "GO-CONT-2024-06-24-5",
 "date": "2024-06-24",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -136,7 +136,7 @@
 {
 "id": "GO-CONT-2024-09-09-6",
 "date": "2024-09-09",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -152,7 +152,7 @@
 {
 "id": "GO-CONT-2024-12-11-7",
 "date": "2024-12-11",
-"year": "Year 1",
+"year": "2024",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -168,7 +168,7 @@
 {
 "id": "GO-CONT-2025-05-20-8",
 "date": "2025-05-20",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -184,7 +184,7 @@
 {
 "id": "GO-CONT-2025-08-25-9",
 "date": "2025-08-25",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -200,7 +200,7 @@
 {
 "id": "GO-CONT-2025-10-08-10",
 "date": "2025-10-08",
-"year": "Year 2",
+"year": "2025",
 "month": "Oct",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -216,7 +216,7 @@
 {
 "id": "GO-CONT-2026-05-22-11",
 "date": "2026-05-22",
-"year": "Year 3",
+"year": "2026",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -232,7 +232,7 @@
 {
 "id": "GO-FRES-2024-06-24-12",
 "date": "2024-06-24",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -248,7 +248,7 @@
 {
 "id": "GO-FRES-2024-09-09-13",
 "date": "2024-09-09",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -264,7 +264,7 @@
 {
 "id": "GO-FRES-2024-12-11-14",
 "date": "2024-12-11",
-"year": "Year 1",
+"year": "2024",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -280,7 +280,7 @@
 {
 "id": "GO-FRES-2025-05-20-15",
 "date": "2025-05-20",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -296,7 +296,7 @@
 {
 "id": "GO-FRES-2025-08-25-16",
 "date": "2025-08-25",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -312,7 +312,7 @@
 {
 "id": "GO-FRES-2025-10-08-17",
 "date": "2025-10-08",
-"year": "Year 2",
+"year": "2025",
 "month": "Oct",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -328,7 +328,7 @@
 {
 "id": "GO-FRES-2026-05-22-18",
 "date": "2026-05-22",
-"year": "Year 3",
+"year": "2026",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -344,7 +344,7 @@
 {
 "id": "GO-HEAT-2024-06-24-19",
 "date": "2024-06-24",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -360,7 +360,7 @@
 {
 "id": "GO-HEAT-2024-09-09-20",
 "date": "2024-09-09",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -376,7 +376,7 @@
 {
 "id": "GO-HEAT-2024-12-11-21",
 "date": "2024-12-11",
-"year": "Year 1",
+"year": "2024",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -392,7 +392,7 @@
 {
 "id": "GO-HEAT-2025-05-20-22",
 "date": "2025-05-20",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -408,7 +408,7 @@
 {
 "id": "GO-HEAT-2025-08-25-23",
 "date": "2025-08-25",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Goose Point",
@@ -424,7 +424,7 @@
 {
 "id": "GO-HEAT-2025-10-08-24",
 "date": "2025-10-08",
-"year": "Year 2",
+"year": "2025",
 "month": "Oct",
 "quarter": "Q4",
 "site": "Goose Point",
@@ -440,7 +440,7 @@
 {
 "id": "GO-HEAT-2026-05-22-25",
 "date": "2026-05-22",
-"year": "Year 3",
+"year": "2026",
 "month": "May",
 "quarter": "Q2",
 "site": "Goose Point",
@@ -456,7 +456,7 @@
 {
 "id": "SE-CONT-2025-05-28-26",
 "date": "2025-05-28",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Sequim Bay",
@@ -472,7 +472,7 @@
 {
 "id": "SE-CONT-2025-10-06-27",
 "date": "2025-10-06",
-"year": "Year 2",
+"year": "2025",
 "month": "Oct",
 "quarter": "Q4",
 "site": "Sequim Bay",
@@ -488,7 +488,7 @@
 {
 "id": "SE-CONT-2026-05-31-28",
 "date": "2026-05-31",
-"year": "Year 3",
+"year": "2026",
 "month": "May",
 "quarter": "Q2",
 "site": "Sequim Bay",
@@ -504,7 +504,7 @@
 {
 "id": "SE-HEAT-2025-05-28-29",
 "date": "2025-05-28",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Sequim Bay",
@@ -520,7 +520,7 @@
 {
 "id": "SE-HEAT-2025-10-06-30",
 "date": "2025-10-06",
-"year": "Year 2",
+"year": "2025",
 "month": "Oct",
 "quarter": "Q4",
 "site": "Sequim Bay",
@@ -536,7 +536,7 @@
 {
 "id": "SE-HEAT-2026-05-31-31",
 "date": "2026-05-31",
-"year": "Year 3",
+"year": "2026",
 "month": "May",
 "quarter": "Q2",
 "site": "Sequim Bay",
@@ -552,7 +552,7 @@
 {
 "id": "WE-CONT-2024-06-20-32",
 "date": "2024-06-20",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -568,7 +568,7 @@
 {
 "id": "WE-CONT-2024-06-25-33",
 "date": "2024-06-25",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -584,7 +584,7 @@
 {
 "id": "WE-CONT-2024-07-08-34",
 "date": "2024-07-08",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -600,7 +600,7 @@
 {
 "id": "WE-CONT-2024-07-17-35",
 "date": "2024-07-17",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -616,7 +616,7 @@
 {
 "id": "WE-CONT-2024-07-24-36",
 "date": "2024-07-24",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -632,7 +632,7 @@
 {
 "id": "WE-CONT-2024-08-01-37",
 "date": "2024-08-01",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -648,7 +648,7 @@
 {
 "id": "WE-CONT-2024-08-07-38",
 "date": "2024-08-07",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -664,7 +664,7 @@
 {
 "id": "WE-CONT-2024-08-15-39",
 "date": "2024-08-15",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -680,7 +680,7 @@
 {
 "id": "WE-CONT-2024-08-20-40",
 "date": "2024-08-20",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -696,7 +696,7 @@
 {
 "id": "WE-CONT-2024-08-29-41",
 "date": "2024-08-29",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -712,7 +712,7 @@
 {
 "id": "WE-CONT-2024-09-03-42",
 "date": "2024-09-03",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Westcott",
@@ -728,7 +728,7 @@
 {
 "id": "WE-CONT-2024-09-12-43",
 "date": "2024-09-12",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Westcott",
@@ -744,7 +744,7 @@
 {
 "id": "WE-CONT-2024-12-17-44",
 "date": "2024-12-17",
-"year": "Year 1",
+"year": "2024",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Westcott",
@@ -760,7 +760,7 @@
 {
 "id": "WE-CONT-2025-05-13-45",
 "date": "2025-05-13",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Westcott",
@@ -776,7 +776,7 @@
 {
 "id": "WE-CONT-2025-05-29-46",
 "date": "2025-05-29",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Westcott",
@@ -792,7 +792,7 @@
 {
 "id": "WE-CONT-2025-06-25-47",
 "date": "2025-06-25",
-"year": "Year 2",
+"year": "2025",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -808,7 +808,7 @@
 {
 "id": "WE-CONT-2025-07-11-48",
 "date": "2025-07-11",
-"year": "Year 2",
+"year": "2025",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -824,7 +824,7 @@
 {
 "id": "WE-CONT-2025-07-24-49",
 "date": "2025-07-24",
-"year": "Year 2",
+"year": "2025",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -840,7 +840,7 @@
 {
 "id": "WE-CONT-2025-08-08-50",
 "date": "2025-08-08",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -856,7 +856,7 @@
 {
 "id": "WE-CONT-2025-08-20-51",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -872,7 +872,7 @@
 {
 "id": "WE-CONT-2025-12-02-52",
 "date": "2025-12-02",
-"year": "Year 2",
+"year": "2025",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Westcott",
@@ -888,7 +888,7 @@
 {
 "id": "WE-HEAT-2024-06-20-53",
 "date": "2024-06-20",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -904,7 +904,7 @@
 {
 "id": "WE-HEAT-2024-06-25-54",
 "date": "2024-06-25",
-"year": "Year 1",
+"year": "2024",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -920,7 +920,7 @@
 {
 "id": "WE-HEAT-2024-07-08-55",
 "date": "2024-07-08",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -936,7 +936,7 @@
 {
 "id": "WE-HEAT-2024-07-17-56",
 "date": "2024-07-17",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -952,7 +952,7 @@
 {
 "id": "WE-HEAT-2024-07-24-57",
 "date": "2024-07-24",
-"year": "Year 1",
+"year": "2024",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -968,7 +968,7 @@
 {
 "id": "WE-HEAT-2024-08-01-58",
 "date": "2024-08-01",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -984,7 +984,7 @@
 {
 "id": "WE-HEAT-2024-08-07-59",
 "date": "2024-08-07",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1000,7 +1000,7 @@
 {
 "id": "WE-HEAT-2024-08-15-60",
 "date": "2024-08-15",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1016,7 +1016,7 @@
 {
 "id": "WE-HEAT-2024-08-20-61",
 "date": "2024-08-20",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1032,7 +1032,7 @@
 {
 "id": "WE-HEAT-2024-08-29-62",
 "date": "2024-08-29",
-"year": "Year 1",
+"year": "2024",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1048,7 +1048,7 @@
 {
 "id": "WE-HEAT-2024-09-03-63",
 "date": "2024-09-03",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1064,7 +1064,7 @@
 {
 "id": "WE-HEAT-2024-09-12-64",
 "date": "2024-09-12",
-"year": "Year 1",
+"year": "2024",
 "month": "Sep",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1080,7 +1080,7 @@
 {
 "id": "WE-HEAT-2024-12-17-65",
 "date": "2024-12-17",
-"year": "Year 1",
+"year": "2024",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Westcott",
@@ -1096,7 +1096,7 @@
 {
 "id": "WE-HEAT-2025-05-13-66",
 "date": "2025-05-13",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Westcott",
@@ -1112,7 +1112,7 @@
 {
 "id": "WE-HEAT-2025-05-29-67",
 "date": "2025-05-29",
-"year": "Year 2",
+"year": "2025",
 "month": "May",
 "quarter": "Q2",
 "site": "Westcott",
@@ -1128,7 +1128,7 @@
 {
 "id": "WE-HEAT-2025-06-25-68",
 "date": "2025-06-25",
-"year": "Year 2",
+"year": "2025",
 "month": "Jun",
 "quarter": "Q2",
 "site": "Westcott",
@@ -1144,7 +1144,7 @@
 {
 "id": "WE-HEAT-2025-07-11-69",
 "date": "2025-07-11",
-"year": "Year 2",
+"year": "2025",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1160,7 +1160,7 @@
 {
 "id": "WE-HEAT-2025-07-24-70",
 "date": "2025-07-24",
-"year": "Year 2",
+"year": "2025",
 "month": "Jul",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1176,7 +1176,7 @@
 {
 "id": "WE-HEAT-2025-08-08-71",
 "date": "2025-08-08",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1192,7 +1192,7 @@
 {
 "id": "WE-HEAT-2025-08-20-72",
 "date": "2025-08-20",
-"year": "Year 2",
+"year": "2025",
 "month": "Aug",
 "quarter": "Q3",
 "site": "Westcott",
@@ -1208,7 +1208,7 @@
 {
 "id": "WE-HEAT-2025-12-02-73",
 "date": "2025-12-02",
-"year": "Year 2",
+"year": "2025",
 "month": "Dec",
 "quarter": "Q4",
 "site": "Westcott",

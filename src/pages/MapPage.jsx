@@ -54,8 +54,8 @@ export default function MapPage() {
                     </dd>
                   </div>
                   <div>
-                    <dt>Mean growth</dt>
-                    <dd>{activeSite.meanGrowth} mm</dd>
+                    <dt>Mean growth volume</dt>
+                    <dd>{activeSite.meanGrowth?.toLocaleString() ?? '—'}</dd>
                   </div>
                   <div>
                     <dt>Mean temperature</dt>

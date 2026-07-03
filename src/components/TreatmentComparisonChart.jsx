@@ -25,7 +25,7 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
   const [showErrorBars, setShowErrorBars] = useState(false);
   const data = view === 'survival' ? survivalData : growthData;
   const yLabel =
-    view === 'survival' ? 'Final survival (%)' : 'Mean growth (mm)';
+    view === 'survival' ? 'Final survival (%)' : 'Mean predicted volume';
   const canShowErrorBars = data?.some((row) =>
     TREATMENTS.some((treatment) => row[`${treatment}Error`] != null)
   );
@@ -57,7 +57,7 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
               className={view === 'growth' ? 'toggle active' : 'toggle'}
               onClick={() => setView('growth')}
             >
-              Mean Growth
+              Growth Volume
             </button>
           </div>
           {canShowErrorBars && (
@@ -75,7 +75,7 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
       <p className="chart-caption">
         {view === 'survival'
           ? 'End-of-period survival by priming treatment within each site'
-          : 'Mean shell height growth by priming treatment within each site'}
+          : 'Mean predicted oyster volume by priming treatment within each site'}
       </p>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={380}>

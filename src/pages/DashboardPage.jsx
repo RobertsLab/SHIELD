@@ -21,7 +21,7 @@ import {
 const DEFAULT_FILTERS = {
   site: 'All Sites',
   treatment: 'All Treatments',
-  metric: 'Growth',
+  metric: 'Growth Volume',
   year: 'All Years',
 };
 

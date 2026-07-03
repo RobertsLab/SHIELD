@@ -6,7 +6,10 @@ const COLUMNS = [
   { key: 'month', label: 'Month' },
   { key: 'site', label: 'Site' },
   { key: 'treatment', label: 'Treatment' },
-  { key: 'growth_mm', label: 'Growth (mm)' },
+  { key: 'effort', label: 'Experiment' },
+  { key: 'tag', label: 'Tag' },
+  { key: 'oyster_number', label: 'Oyster' },
+  { key: 'growth_volume', label: 'Growth Volume' },
   { key: 'temperature_C', label: 'Temperature (°C)' },
   { key: 'survival_percent', label: 'Survival (%)' },
 ];
@@ -83,8 +86,8 @@ export default function DataTable({ data }) {
       </div>
       <p className="chart-caption">
         Real field observation records (RobertsLab project-gigas-conditioning +
-        Baywater 10K-Seed). A “—” means that metric was not measured at that
-        assessment. Click column headers to sort.
+        Baywater 10K-Seed + linked growth CSV outputs). A “—” means that metric
+        was not measured at that assessment. Click column headers to sort.
       </p>
 
       {sorted.length === 0 ? (

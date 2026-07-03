@@ -37,9 +37,6 @@ ARCHIVAL = os.path.join(REPO, "src", "data", "archivalTemperatureData.json")
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-# Calendar year -> study-year label. Outplants span 2024-2026.
-YEAR_LABEL = {2024: "Year 1", 2025: "Year 2", 2026: "Year 3"}
-
 
 def parse_ymd(v):
     """Accept '20240624', '2024-06-24', or a Timestamp -> date string YYYY-MM-DD."""
@@ -55,7 +52,7 @@ def date_fields(dstr):
     dt = datetime.strptime(dstr, "%Y-%m-%d")
     return {
         "date": dstr,
-        "year": YEAR_LABEL.get(dt.year, f"Year {dt.year - 2023}"),
+        "year": str(dt.year),
         "month": MONTHS[dt.month - 1],
         "quarter": f"Q{(dt.month - 1) // 3 + 1}",
     }

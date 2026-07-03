@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 const METRIC_LABELS = {
-  Growth: 'Shell height (mm)',
+  'Growth Volume': 'Predicted volume',
   Temperature: 'Water temperature (°C)',
   Survival: 'Survival (%)',
 };
