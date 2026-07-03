@@ -4,9 +4,10 @@
 
 SHIELD is a lightweight web dashboard for exploring how stress-hardening
 treatments perform across Pacific Northwest shellfish outplant sites. It brings
-together real RobertsLab field observations, in-situ temperature logger records,
-and near-live public environmental feeds so users can compare growth, survival,
-temperature, site conditions, and treatment outcomes in one browser-based view.
+together RobertsLab field observations, individual oyster growth-volume records,
+in-situ temperature logger summaries, and near-live public environmental feeds
+so users can compare growth, survival, temperature, site conditions, source
+coverage, and treatment outcomes in one browser-based view.
 
 The app is built with React, Vite, Recharts, Leaflet, and React Router. It is
 deployed as a static single-page app, with data prepared ahead of time by build
@@ -23,7 +24,7 @@ The website now includes four main views:
 |-------|------|---------|
 | `/` | Dashboard | Filter field observations, compare treatments and sites, inspect time-series charts, and export field summaries |
 | `/map` | Site Map | Explore outplant locations, site summaries, and links back into filtered dashboard views |
-| `/live-data` | Live Data | Review near-live environmental observations, source metadata, maps, and OSEL-score context |
+| `/live-data` | Live Data | Review near-live environmental observations, source metadata, source maps, and 4-week OSEL-score context |
 | `/research` | Research Overview | Share project objectives, collaborators, Washington Sea Grant support, and research context |
 
 ## Purpose
@@ -60,7 +61,8 @@ The backend-like work happens before deployment:
 - `.github/workflows/live-temperature.yml` refreshes the live environmental
   snapshot hourly and commits it only when the JSON changes.
 - `.github/workflows/deploy.yml` builds the static app and deploys the `dist/`
-  artifact to GitHub Pages.
+  artifact to GitHub Pages after pushes to `main`, successful live-environment
+  refreshes, or manual workflow dispatches.
 
 This design keeps the public site simple to host on GitHub Pages while still
 allowing scheduled server-side data refreshes for sources that cannot be fetched
@@ -78,10 +80,17 @@ Current committed data summary:
 | Dataset | File | Description |
 |---------|------|-------------|
 | Field observations | `src/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Baywater 10K-Seed survival anchors |
-| Growth observations | `src/data/growthObservations.json` | 24,704 individual oyster predicted-volume records from Baywater, Goose Point, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
+| Growth observations | `src/data/growthObservations.json` | 24,704 individual oyster predicted-volume records refreshed from Baywater, Goose Point, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
 | Archival temperature | `src/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
-| Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, streamflow, and chlorophyll source matches |
+| Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
 | Site metadata | `src/data/mockShellfishData.js` | Site coordinates, regions, descriptions, colors, filter helpers, and chart aggregation helpers |
+
+The dashboard-facing observation array is assembled in `src/data/mockShellfishData.js`
+from both field observations and growth observations. Field rows retain
+survival, shell-length growth, and monthly logger-temperature values where
+available, while individual growth-volume rows set survival and temperature to
+`null`. Aggregations and exports are null-safe, so missing metrics show as
+unavailable rather than as zeroes.
 
 ### Sites
 
@@ -89,8 +98,8 @@ Current committed data summary:
 - Sequim Bay, Washington
 - Goose Point, Palix River / Willapa Bay, Washington
 - Westcott, Westcott Bay / San Juan Island, Washington
-- Dabob Bay is included in the near-live environmental panel as an
-  environmental-only context site
+- Bainbridge Island and Dabob Bay are included in the near-live environmental
+  panel as environmental-only context sites
 
 ### Treatments
 
@@ -107,10 +116,11 @@ Current committed data summary:
 - Water temperature, in degrees Celsius from in-situ logger monthly means for
   field observation rows and daily means for the archival temperature chart
 - Near-live environmental context, including water temperature, air temperature,
-  air pressure, wind, tide height, tide predictions, salinity/conductivity where
-  available, streamflow, and chlorophyll source matches
-
-See `docs/DATA_FORMAT.md` for the observation schema and integration notes.
+  air pressure, wind, gusts, wave height, tide height, salinity/conductivity
+  where available, streamflow where available, and chlorophyll source matches
+- OSEL-Score, a 1-5 heuristic forecast for oyster stress-event likelihood from
+  elevated air temperature coinciding with low-tide exposure over the next four
+  weeks
 
 ## Data Sources And Credits
 
@@ -122,7 +132,7 @@ when reusing the dashboard or derived data products.
 | RobertsLab `project-gigas-conditioning` | Goose Point, Sequim Bay, and Westcott outplant survival/growth inputs; environmental temperature CSVs for Sequim Bay, Goose Point, and Westcott | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/buildArchivalTemperature.mjs` |
 | RobertsLab `10K-seed-Cgigas` | Baywater 10K-Seed survival anchors, Baywater growth CSV, and Baywater temperature CSV | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/buildArchivalTemperature.mjs` |
 | RobertsLab `polyIC-larvae` | Sequim Bay PolyIC growth CSV | `scripts/build_growth_observations.py` |
-| NOAA National Data Buoy Center (NDBC) realtime feeds | Nearby buoy meteorological and water-condition observations | `scripts/build_live_temperature.py` |
+| NOAA National Data Buoy Center (NDBC) realtime feeds | Nearby buoy meteorological, wave, and water-condition observations | `scripts/build_live_temperature.py` |
 | NOAA CO-OPS Tides and Currents API | Water temperature, air temperature, pressure, humidity, salinity, conductivity, wind, water level, and tide predictions from nearby stations | `scripts/build_live_temperature.py` |
 | USGS National Water Information System (NWIS) Instantaneous Values API | Nearby watershed streamflow context for Dabob Bay | `scripts/build_live_temperature.py` |
 | NANOOS Shellfish Growers portal, including matched UW ORCA, Padilla Bay NERR, WA Ecology, and Pacific Shellfish Institute sources | Shellfish-focused chlorophyll and water-quality source matches; some imports are marked as source-matched until automated access is configured | `scripts/build_live_temperature.py` |
@@ -143,6 +153,8 @@ available, especially `src/data/archivalTemperatureData.json` and
 - Field report export for the current filter state
 - Geographic site map with interactive markers
 - Near-live environmental dashboard with source map and source ledger
+- Four-week OSEL-score forecast cards for sites with current air-temperature
+  and tide-height inputs
 - Research overview page for objectives, collaborators, Washington Sea Grant
   support, and project summary language
 
@@ -273,8 +285,6 @@ The React Router basename is derived automatically from this setting.
 ```text
 shield-dashboard/
 ├── README.md
-├── docs/
-│   └── DATA_FORMAT.md
 ├── package.json
 ├── index.html
 ├── vite.config.js
