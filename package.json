@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:growth": "python3 scripts/build_growth_observations.py",
+    "build:survival": "python3 scripts/build_survival_observations.py",
     "build:live-environment": "python3 scripts/build_live_temperature.py",
     "build:temperature": "node scripts/buildArchivalTemperature.mjs",
     "build": "vite build && cp dist/index.html dist/404.html && touch dist/.nojekyll",

@@ -12,10 +12,12 @@
  */
 import realData from './realObservations.json';
 import growthData from './growthObservations.json';
+import survivalData from './survivalObservations.json';
 
 export const realDataMeta = {
   ...realData.meta,
   growth: growthData.meta,
+  survival: survivalData.meta,
 };
 
 /** Geographic metadata for the real C. gigas outplant sites. */
@@ -59,7 +61,10 @@ export const MAP_ZOOM = 7;
 
 /** Controlled vocabularies — derived from the real dataset. */
 export const SITES = Object.keys(SITE_LOCATIONS).filter(
-  (s) => realData.sites.includes(s) || growthData.sites.includes(s)
+  (s) =>
+    realData.sites.includes(s) ||
+    growthData.sites.includes(s) ||
+    survivalData.sites.includes(s)
 );
 
 const TREATMENT_ORDER = [
@@ -73,20 +78,29 @@ const TREATMENT_ORDER = [
 const treatmentsPresent = new Set([
   ...realData.treatments,
   ...growthData.treatments,
+  ...survivalData.treatments,
 ]);
 export const TREATMENTS = TREATMENT_ORDER.filter((t) => treatmentsPresent.has(t));
 
-export const YEARS = [...new Set([...realData.years, ...growthData.years])].sort();
+export const YEARS = [
+  ...new Set([...realData.years, ...growthData.years, ...survivalData.years]),
+].sort();
 export const METRICS = ['Growth Volume', 'Temperature', 'Survival'];
 
 export const mockShellfishData = [
+  // realObservations still supplies in-situ temperature (and legacy growth_mm).
+  // Survival now comes from survivalObservations.json (per-bag published CSVs),
+  // so the aggregated survival anchors here are dropped to avoid double-counting.
   ...realData.observations.map((row) => ({
     ...row,
     tag: row.tag ?? null,
     oyster_number: row.oyster_number ?? null,
     growth_volume: null,
+    survival_percent: null,
+    survival_source: 'none',
   })),
   ...growthData.observations,
+  ...survivalData.observations,
 ];
 
 const METRIC_KEYS = {
