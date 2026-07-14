@@ -52,6 +52,8 @@ The backend-like work happens before deployment:
   writes `src/data/realObservations.json`.
 - `scripts/build_growth_observations.py` downloads RobertsLab growth CSV
   outputs and writes `src/data/growthObservations.json`.
+- `scripts/build_survival_observations.py` downloads RobertsLab survival CSV
+  outputs and writes `src/data/survivalObservations.json`.
 - `scripts/buildArchivalTemperature.mjs` downloads high-frequency HOBO logger
   CSVs, aggregates them to daily mean/min/max water temperature, and writes
   `src/data/archivalTemperatureData.json`.
@@ -72,8 +74,8 @@ directly from the browser because of CORS or credential constraints.
 
 The historical placeholder dataset has been replaced with real observation
 records. The `mockShellfishData` export name remains for component compatibility,
-but it now combines `src/data/realObservations.json` with
-`src/data/growthObservations.json`.
+but it now combines `src/data/realObservations.json`,
+`src/data/growthObservations.json`, and `src/data/survivalObservations.json`.
 
 Current committed data summary:
 
@@ -81,16 +83,20 @@ Current committed data summary:
 |---------|------|-------------|
 | Field observations | `src/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Baywater 10K-Seed survival anchors |
 | Growth observations | `src/data/growthObservations.json` | 24,704 individual oyster predicted-volume records refreshed from Baywater, Goose Point, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
+| Survival observations | `src/data/survivalObservations.json` | 714 per-bag percent-survival records from Baywater, Goose Point, and Westcott survival CSV outputs (Westcott per assessment date; Baywater and Goose Point total survival) |
 | Archival temperature | `src/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
 | Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
 | Site metadata | `src/data/mockShellfishData.js` | Site coordinates, regions, descriptions, colors, filter helpers, and chart aggregation helpers |
 
 The dashboard-facing observation array is assembled in `src/data/mockShellfishData.js`
-from both field observations and growth observations. Field rows retain
-survival, shell-length growth, and monthly logger-temperature values where
-available, while individual growth-volume rows set survival and temperature to
-`null`. Aggregations and exports are null-safe, so missing metrics show as
-unavailable rather than as zeroes.
+from field, growth, and survival observations. Field rows supply monthly
+logger-temperature (and legacy shell-length growth) values; per-bag survival
+rows carry percent survival; individual growth-volume rows carry predicted
+volume. Each record leaves metrics it does not measure as `null`, and the
+aggregated survival anchors formerly held in the field rows are dropped in favor
+of the per-bag survival dataset to avoid double-counting. Aggregations and
+exports are null-safe, so missing metrics show as unavailable rather than as
+zeroes.
 
 ### Sites
 
@@ -129,8 +135,8 @@ when reusing the dashboard or derived data products.
 
 | Source | Used for | Where used |
 |--------|----------|------------|
-| RobertsLab `project-gigas-conditioning` | Goose Point, Sequim Bay, and Westcott outplant survival/growth inputs; environmental temperature CSVs for Sequim Bay, Goose Point, and Westcott | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/buildArchivalTemperature.mjs` |
-| RobertsLab `10K-seed-Cgigas` | Baywater 10K-Seed survival anchors, Baywater growth CSV, and Baywater temperature CSV | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/buildArchivalTemperature.mjs` |
+| RobertsLab `project-gigas-conditioning` | Goose Point, Sequim Bay, and Westcott outplant survival/growth inputs; Goose Point and Westcott survival CSV outputs; environmental temperature CSVs for Sequim Bay, Goose Point, and Westcott | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/build_survival_observations.py`, `scripts/buildArchivalTemperature.mjs` |
+| RobertsLab `10K-seed-Cgigas` | Baywater 10K-Seed survival CSV output, Baywater growth CSV, and Baywater temperature CSV | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/build_survival_observations.py`, `scripts/buildArchivalTemperature.mjs` |
 | RobertsLab `polyIC-larvae` | Sequim Bay PolyIC growth CSV | `scripts/build_growth_observations.py` |
 | NOAA National Data Buoy Center (NDBC) realtime feeds | Nearby buoy meteorological, wave, and water-condition observations | `scripts/build_live_temperature.py` |
 | NOAA CO-OPS Tides and Currents API | Water temperature, air temperature, pressure, humidity, salinity, conductivity, wind, water level, and tide predictions from nearby stations | `scripts/build_live_temperature.py` |
@@ -221,6 +227,12 @@ Regenerate growth observations manually:
 npm run build:growth
 ```
 
+Regenerate survival observations manually:
+
+```bash
+npm run build:survival
+```
+
 Preview the production build locally:
 
 ```bash
@@ -290,6 +302,7 @@ shield-dashboard/
 ├── vite.config.js
 ├── scripts/
 │   ├── build_growth_observations.py
+│   ├── build_survival_observations.py
 │   ├── build_real_observations.py
 │   ├── buildArchivalTemperature.mjs
 │   └── build_live_temperature.py
@@ -302,7 +315,8 @@ shield-dashboard/
     │   ├── growthObservations.json
     │   ├── liveTemperature.json
     │   ├── mockShellfishData.js
-    │   └── realObservations.json
+    │   ├── realObservations.json
+    │   └── survivalObservations.json
     ├── pages/
     │   ├── DashboardPage.jsx
     │   ├── LiveDataPage.jsx
@@ -331,6 +345,7 @@ shield-dashboard/
 | `npm run preview` | Preview the production build locally |
 | `npm run deploy` | Alias for the production build |
 | `npm run build:growth` | Refresh `src/data/growthObservations.json` from RobertsLab growth CSV outputs |
+| `npm run build:survival` | Refresh `src/data/survivalObservations.json` from RobertsLab survival CSV outputs |
 | `npm run build:live-environment` | Refresh `src/data/liveTemperature.json` from public observing feeds |
 | `npm run build:temperature` | Regenerate `src/data/archivalTemperatureData.json` from source temperature CSVs |
 
