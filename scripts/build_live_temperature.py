@@ -44,11 +44,11 @@ HTTP_TIMEOUT = 30
 # src/data/mockShellfishData.js; environmental-only sites can be listed here
 # without entering the oyster observation dataset.
 SITES = {
-    "Baywater": (47.808, -122.738),       # Thorndyke Bay, Hood Canal
+    "Thorndyke Bay": (47.808, -122.738),       # Thorndyke Bay, Hood Canal
     "Bainbridge Island": (47.6262, -122.5212),  # Central Puget Sound
     "Dabob Bay": (47.7617, -122.85),      # Whitney Point / Pt. Whitney Lagoon
     "Sequim Bay": (48.07, -123.03),       # Sequim Bay
-    "Goose Point": (46.62, -123.86),      # Palix River, Willapa Bay
+    "Palix River/Willapa Bay": (46.62, -123.86),      # Palix River, Willapa Bay
     "Westcott": (48.582, -123.167),       # Westcott Bay, San Juan Island
 }
 
@@ -56,7 +56,7 @@ SITES = {
 #   ndbc  -> NDBC realtime2 standard meteorological file
 #   coops -> NOAA CO-OPS meteorological products
 STATION_CANDIDATES = {
-    "Baywater": [
+    "Thorndyke Bay": [
         {"type": "ndbc", "id": "46125", "name": "Hood Canal (NDBC 46125)",
          "lat": 47.907, "lon": -122.627},
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
@@ -84,7 +84,7 @@ STATION_CANDIDATES = {
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
     ],
-    "Goose Point": [
+    "Palix River/Willapa Bay": [
         {"type": "ndbc", "id": "46211", "name": "Grays Harbor (NDBC 46211)",
          "lat": 46.858, "lon": -124.244},
         {"type": "ndbc", "id": "46243", "name": "Grays Harbor Entrance (NDBC 46243)",
@@ -99,7 +99,7 @@ STATION_CANDIDATES = {
 }
 
 CHLOROPHYLL_CANDIDATES = {
-    "Baywater": {
+    "Thorndyke Bay": {
         "provider": "NANOOS Shellfish Growers / UW ORCA",
         "station_name": "Hood Canal ORCA moorings (Twanoh, Hoodsport, Dabob Bay)",
         "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
@@ -123,7 +123,7 @@ CHLOROPHYLL_CANDIDATES = {
         "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
         "note": "Use as the nearest NANOOS shellfish chlorophyll source until a Sequim-specific public station is available.",
     },
-    "Goose Point": {
+    "Palix River/Willapa Bay": {
         "provider": "NANOOS Shellfish Growers / WA Ecology / Pacific Shellfish Institute",
         "station_name": "Willapa Bay / Bay Center monitoring sites",
         "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
@@ -138,7 +138,7 @@ CHLOROPHYLL_CANDIDATES = {
 }
 
 TIDE_STATION_CANDIDATES = {
-    "Baywater": [
+    "Thorndyke Bay": [
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
     ],
@@ -158,7 +158,7 @@ TIDE_STATION_CANDIDATES = {
         {"type": "coops", "id": "9444900", "name": "Port Townsend",
          "lat": 48.1112, "lon": -122.7597},
     ],
-    "Goose Point": [
+    "Palix River/Willapa Bay": [
         {"type": "coops", "id": "9440910", "name": "Toke Point",
          "lat": 46.7075, "lon": -123.9669},
     ],

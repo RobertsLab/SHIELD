@@ -23,7 +23,7 @@ export default function App() {
           <p>
             SHIELD · Shellfish Hardening and Integrated Environmental
             Longitudinal Dashboard · Real field data — RobertsLab
-            project-gigas-conditioning + Baywater 10K-Seed ·{' '}
+            project-gigas-conditioning + Thorndyke Bay 10K-Seed ·{' '}
             {mockShellfishData.length.toLocaleString()} observation records ·{' '}
             <Link to="/research">Research background</Link> ·{' '}
             <a

@@ -86,7 +86,7 @@ export default function DataTable({ data }) {
       </div>
       <p className="chart-caption">
         Real field observation records (RobertsLab project-gigas-conditioning +
-        Baywater 10K-Seed + linked growth CSV outputs). A “—” means that metric
+        Thorndyke Bay 10K-Seed + linked growth CSV outputs). A “—” means that metric
         was not measured at that assessment. Click column headers to sort.
       </p>
 

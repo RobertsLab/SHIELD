@@ -8,7 +8,7 @@ treatment/site means and error bars are computed from the underlying replicates.
 
 Survival files use the same treatment identifiers as the growth files:
   - Westcott reports survival at each assessment date (per-timepoint rows).
-  - Baywater and Goose Point report a single total (end-of-period) survival per
+  - Thorndyke Bay and Palix River/Willapa Bay report a single total (end-of-period) survival per
     bag; those sites are stamped with their assessment date below.
 
 All source files carry survival as a 0-1 proportion, stored here as a 0-100
@@ -20,6 +20,7 @@ import csv
 import json
 import math
 import os
+import re
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -38,14 +39,14 @@ SURVIVAL_KEYS = ("survival", "percent_survival", "proportion_remaining")
 
 SOURCES = [
     {
-        "site": "Baywater",
+        "site": "Thorndyke Bay",
         "repo": "RobertsLab/10K-seed-Cgigas",
         "url": "https://raw.githubusercontent.com/RobertsLab/10K-seed-Cgigas/main/output/baywater_survival.csv",
         # Total survival; assessment date is embedded in the source column names.
         "default_date": "2025-08-20",
     },
     {
-        "site": "Goose Point",
+        "site": "Palix River/Willapa Bay",
         "repo": "RobertsLab/project-gigas-conditioning",
         "url": "https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/goosepoint_survival.csv",
         # Total survival, no date column; stamped with the latest program assessment.
@@ -126,6 +127,10 @@ def survival_for(row):
     return None, None
 
 
+def site_slug(site):
+    return re.sub(r"[^A-Z0-9]+", "-", site.upper()).strip("-")
+
+
 records = []
 source_rows = {}
 record_counts = {}
@@ -147,7 +152,7 @@ for source in SOURCES:
         fields = date_fields(dstr)
 
         records.append({
-            "id": f"SURV-{source['site'].upper().replace(' ', '-')}-{dstr}-{idx}",
+            "id": f"SURV-{site_slug(source['site'])}-{dstr}-{idx}",
             **fields,
             "site": source["site"],
             "treatment": treatment,
@@ -194,7 +199,7 @@ bundle = {
         "sourceRows": source_rows,
         "recordCounts": record_counts,
         "survivalMetric": "Percent survival per bag/replicate (0-100)",
-        "notes": "Westcott has survival at each time point; Baywater and Goose Point report total (end-of-period) survival.",
+        "notes": "Westcott has survival at each time point; Thorndyke Bay and Palix River/Willapa Bay report total (end-of-period) survival.",
         "sourceUrls": [source["url"] for source in SOURCES],
     },
     "sites": sites,

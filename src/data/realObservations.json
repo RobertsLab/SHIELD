@@ -5,22 +5,22 @@
 "studyTitle": "Crassostrea gigas stress-hardening outplant program",
 "recordCount": 74,
 "siteNotes": {
-"Goose Point": "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length.",
+"Palix River/Willapa Bay": "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length.",
 "Sequim Bay": "Effort A (2 weeks daily 25\u00b0C thermal hardening), control/treated. Real survival from cumulative mortality; image-derived shell length.",
 "Westcott": "Efforts B (daily) & D (weekly) thermal hardening, control/treated. Real survival (alive/initial per bag). Image growth not yet calibrated to mm.",
-"Baywater": "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
+"Thorndyke Bay": "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
 },
 "treatmentMapping": {
 "Control": "untreated control (any effort)",
 "Heat primed": "temperature / thermal hardening (treated)",
 "Freshwater primed": "fresh water / low-salinity hardening (treated)",
-"Immune primed": "polyIC / immune challenge (Baywater 10K-Seed)",
-"Combined stress primed": "fresh water + temperature (Baywater 10K-Seed)"
+"Immune primed": "polyIC / immune challenge (Thorndyke Bay 10K-Seed)",
+"Combined stress primed": "fresh water + temperature (Thorndyke Bay 10K-Seed)"
 }
 },
 "sites": [
-"Baywater",
-"Goose Point",
+"Thorndyke Bay",
+"Palix River/Willapa Bay",
 "Sequim Bay",
 "Westcott"
 ],
@@ -38,12 +38,12 @@
 ],
 "observations": [
 {
-"id": "BA-COMB-2025-08-20-0",
+"id": "TH-COMB-2025-08-20-0",
 "date": "2025-08-20",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Baywater",
+"site": "Thorndyke Bay",
 "treatment": "Combined stress primed",
 "effort": "10K-Seed (hardening)",
 "growth_mm": null,
@@ -54,12 +54,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "BA-CONT-2025-08-20-1",
+"id": "TH-CONT-2025-08-20-1",
 "date": "2025-08-20",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Baywater",
+"site": "Thorndyke Bay",
 "treatment": "Control",
 "effort": "10K-Seed (hardening)",
 "growth_mm": null,
@@ -70,12 +70,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "BA-FRES-2025-08-20-2",
+"id": "TH-FRES-2025-08-20-2",
 "date": "2025-08-20",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Baywater",
+"site": "Thorndyke Bay",
 "treatment": "Freshwater primed",
 "effort": "10K-Seed (hardening)",
 "growth_mm": null,
@@ -86,12 +86,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "BA-HEAT-2025-08-20-3",
+"id": "TH-HEAT-2025-08-20-3",
 "date": "2025-08-20",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Baywater",
+"site": "Thorndyke Bay",
 "treatment": "Heat primed",
 "effort": "10K-Seed (hardening)",
 "growth_mm": null,
@@ -102,12 +102,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "BA-IMMU-2025-08-20-4",
+"id": "TH-IMMU-2025-08-20-4",
 "date": "2025-08-20",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Baywater",
+"site": "Thorndyke Bay",
 "treatment": "Immune primed",
 "effort": "10K-Seed (hardening)",
 "growth_mm": null,
@@ -118,12 +118,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2024-06-24-5",
+"id": "PA-CONT-2024-06-24-5",
 "date": "2024-06-24",
 "year": "2024",
 "month": "Jun",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 25.9,
@@ -134,12 +134,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2024-09-09-6",
+"id": "PA-CONT-2024-09-09-6",
 "date": "2024-09-09",
 "year": "2024",
 "month": "Sep",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 42.2,
@@ -150,12 +150,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2024-12-11-7",
+"id": "PA-CONT-2024-12-11-7",
 "date": "2024-12-11",
 "year": "2024",
 "month": "Dec",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 58.4,
@@ -166,12 +166,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2025-05-20-8",
+"id": "PA-CONT-2025-05-20-8",
 "date": "2025-05-20",
 "year": "2025",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 74.1,
@@ -182,12 +182,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2025-08-25-9",
+"id": "PA-CONT-2025-08-25-9",
 "date": "2025-08-25",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 87.9,
@@ -198,12 +198,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2025-10-08-10",
+"id": "PA-CONT-2025-10-08-10",
 "date": "2025-10-08",
 "year": "2025",
 "month": "Oct",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 94.5,
@@ -214,12 +214,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-CONT-2026-05-22-11",
+"id": "PA-CONT-2026-05-22-11",
 "date": "2026-05-22",
 "year": "2026",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Control",
 "effort": "Effort E \u2014 weekly fresh water; Effort E \u2014 weekly temperature",
 "growth_mm": 92.5,
@@ -230,12 +230,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2024-06-24-12",
+"id": "PA-FRES-2024-06-24-12",
 "date": "2024-06-24",
 "year": "2024",
 "month": "Jun",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 22.9,
@@ -246,12 +246,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2024-09-09-13",
+"id": "PA-FRES-2024-09-09-13",
 "date": "2024-09-09",
 "year": "2024",
 "month": "Sep",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 43.7,
@@ -262,12 +262,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2024-12-11-14",
+"id": "PA-FRES-2024-12-11-14",
 "date": "2024-12-11",
 "year": "2024",
 "month": "Dec",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 58.6,
@@ -278,12 +278,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2025-05-20-15",
+"id": "PA-FRES-2025-05-20-15",
 "date": "2025-05-20",
 "year": "2025",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 75.1,
@@ -294,12 +294,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2025-08-25-16",
+"id": "PA-FRES-2025-08-25-16",
 "date": "2025-08-25",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 96.6,
@@ -310,12 +310,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2025-10-08-17",
+"id": "PA-FRES-2025-10-08-17",
 "date": "2025-10-08",
 "year": "2025",
 "month": "Oct",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": 92.2,
@@ -326,12 +326,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-FRES-2026-05-22-18",
+"id": "PA-FRES-2026-05-22-18",
 "date": "2026-05-22",
 "year": "2026",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Freshwater primed",
 "effort": "Effort E \u2014 weekly fresh water",
 "growth_mm": null,
@@ -342,12 +342,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2024-06-24-19",
+"id": "PA-HEAT-2024-06-24-19",
 "date": "2024-06-24",
 "year": "2024",
 "month": "Jun",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 26.9,
@@ -358,12 +358,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2024-09-09-20",
+"id": "PA-HEAT-2024-09-09-20",
 "date": "2024-09-09",
 "year": "2024",
 "month": "Sep",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 42.1,
@@ -374,12 +374,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2024-12-11-21",
+"id": "PA-HEAT-2024-12-11-21",
 "date": "2024-12-11",
 "year": "2024",
 "month": "Dec",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 60.3,
@@ -390,12 +390,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2025-05-20-22",
+"id": "PA-HEAT-2025-05-20-22",
 "date": "2025-05-20",
 "year": "2025",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 74.5,
@@ -406,12 +406,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2025-08-25-23",
+"id": "PA-HEAT-2025-08-25-23",
 "date": "2025-08-25",
 "year": "2025",
 "month": "Aug",
 "quarter": "Q3",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 86.0,
@@ -422,12 +422,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2025-10-08-24",
+"id": "PA-HEAT-2025-10-08-24",
 "date": "2025-10-08",
 "year": "2025",
 "month": "Oct",
 "quarter": "Q4",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": 97.4,
@@ -438,12 +438,12 @@
 "temperature_source": "logger-monthly-mean"
 },
 {
-"id": "GO-HEAT-2026-05-22-25",
+"id": "PA-HEAT-2026-05-22-25",
 "date": "2026-05-22",
 "year": "2026",
 "month": "May",
 "quarter": "Q2",
-"site": "Goose Point",
+"site": "Palix River/Willapa Bay",
 "treatment": "Heat primed",
 "effort": "Effort E \u2014 weekly temperature",
 "growth_mm": null,

@@ -16,11 +16,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** Display name -> source CSV. Names match SITE_LOCATIONS in mockShellfishData.js. */
 const SOURCES = {
-  Baywater:
+  'Thorndyke Bay':
     'https://raw.githubusercontent.com/RobertsLab/10K-seed-Cgigas/main/output/baywater_temperature_20250822.csv',
   'Sequim Bay':
     'https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/environmental/sequim-temperature-data.csv',
-  'Goose Point':
+  'Palix River/Willapa Bay':
     'https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/environmental/goose-point-temperature-data.csv',
   Westcott:
     'https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/environmental/westcott-temperature-data.csv',

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Build real observation records for the Shellfish Farm Outplant Dashboard from
-the RobertsLab `project-gigas-conditioning` repo (+ Baywater 10K-Seed survival
+the RobertsLab `project-gigas-conditioning` repo (+ Thorndyke Bay 10K-Seed survival
 anchors quoted in the lab notebooks).
 
 Each output record is one site x treatment x assessment-date measurement with
@@ -16,8 +16,8 @@ dashboard's treatment axis, and the original experiment is preserved in `effort`
   Control (any)                  -> Control
   Temperature / thermal treated  -> Heat primed
   Fresh water treated            -> Freshwater primed
-  polyIC / immune                -> Immune primed        (Baywater 10K-Seed only)
-  FW + temperature               -> Combined stress primed (Baywater 10K-Seed only)
+  polyIC / immune                -> Immune primed        (Thorndyke Bay 10K-Seed only)
+  FW + temperature               -> Combined stress primed (Thorndyke Bay 10K-Seed only)
 
 Run:  python3 scripts/build_real_observations.py
 """
@@ -127,9 +127,9 @@ def emit(site, treatment, effort, dstr, survival=None, growth=None,
 
 
 # ---------------------------------------------------------------------------
-# GOOSE POINT  (Effort E: weekly temperature / weekly fresh water, control/treated)
+# PALIX RIVER/WILLAPA BAY  (Effort E: weekly temperature / weekly fresh water, control/treated)
 # ---------------------------------------------------------------------------
-def goose_point():
+def palix_river_willapa_bay():
     surv = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/survival_GoosePoint.csv"))
     grow = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/growth_GoosePoint.csv"))
     bags = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/bag_list_GoosePoint.csv"))
@@ -174,10 +174,10 @@ def goose_point():
         keys[k]["grow"] = r["grow"]
 
     for (trt, dstr), v in sorted(keys.items(), key=lambda kv: (kv[0][1], kv[0][0])):
-        emit("Goose Point", trt, v.get("eff", "Effort E"), dstr,
+        emit("Palix River/Willapa Bay", trt, v.get("eff", "Effort E"), dstr,
              survival=v.get("surv"), growth=v.get("grow"),
              survival_src="measured", growth_src="measured")
-    notes["Goose Point"] = "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length."
+    notes["Palix River/Willapa Bay"] = "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length."
 
 
 # ---------------------------------------------------------------------------
@@ -286,11 +286,11 @@ def westcott():
 
 
 # ---------------------------------------------------------------------------
-# BAYWATER  (10K-Seed, 5 treatments) — survival anchors quoted in lab notebooks
+# THORNDYKE BAY  (10K-Seed, 5 treatments) — survival anchors quoted in lab notebooks
 # (raw data lives in RobertsLab/10K-seed-Cgigas, not in project-gigas-conditioning)
 # ---------------------------------------------------------------------------
-def baywater():
-    # Measured survival %, Baywater 10K-Seed assessment 2025-08-20 (n=150/bag)
+def thorndyke_bay():
+    # Measured survival %, Thorndyke Bay 10K-Seed assessment 2025-08-20 (n=150/bag)
     anchor = {
         "Control": 43.1,
         "Heat primed": 41.6,
@@ -299,15 +299,15 @@ def baywater():
         "Combined stress primed": 50.1,
     }
     for trt, pct in anchor.items():
-        emit("Baywater", trt, "10K-Seed (hardening)", "2025-08-20",
+        emit("Thorndyke Bay", trt, "10K-Seed (hardening)", "2025-08-20",
              survival=pct, survival_src="measured")
-    notes["Baywater"] = "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
+    notes["Thorndyke Bay"] = "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
 
 
-goose_point()
+palix_river_willapa_bay()
 sequim()
 westcott()
-baywater()
+thorndyke_bay()
 
 records.sort(key=lambda r: (r["site"], r["treatment"], r["date"]))
 for i, r in enumerate(records):
@@ -331,8 +331,8 @@ bundle = {
             "Control": "untreated control (any effort)",
             "Heat primed": "temperature / thermal hardening (treated)",
             "Freshwater primed": "fresh water / low-salinity hardening (treated)",
-            "Immune primed": "polyIC / immune challenge (Baywater 10K-Seed)",
-            "Combined stress primed": "fresh water + temperature (Baywater 10K-Seed)",
+            "Immune primed": "polyIC / immune challenge (Thorndyke Bay 10K-Seed)",
+            "Combined stress primed": "fresh water + temperature (Thorndyke Bay 10K-Seed)",
         },
     },
     "sites": sites,

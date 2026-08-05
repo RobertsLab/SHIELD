@@ -46,8 +46,8 @@ export default function Header() {
         </div>
         <p className="disclaimer">
           Real field measurements: survival &amp; image-derived shell growth
-          from RobertsLab outplant assessments (Goose Point, Sequim, Westcott)
-          plus Baywater 10K-Seed survival; temperature is the in-situ HOBO
+          from RobertsLab outplant assessments (Palix River/Willapa Bay, Sequim, Westcott)
+          plus Thorndyke Bay 10K-Seed survival; temperature is the in-situ HOBO
           logger monthly mean. Metrics not measured at an assessment are blank.
         </p>
       </div>

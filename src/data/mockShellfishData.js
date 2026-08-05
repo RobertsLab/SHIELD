@@ -2,7 +2,7 @@
  * Real observation data for SHIELD.
  *
  * Records are produced by `scripts/build_real_observations.py` from the
- * RobertsLab `project-gigas-conditioning` repo (+ Baywater 10K-Seed survival
+ * RobertsLab `project-gigas-conditioning` repo (+ Thorndyke Bay 10K-Seed survival
  * anchors) and committed as `realObservations.json`. Each record is one
  * site × treatment × assessment-date measurement; a metric is present only where
  * it was actually measured, otherwise `null` (aggregations below are null-safe).
@@ -22,12 +22,12 @@ export const realDataMeta = {
 
 /** Geographic metadata for the real C. gigas outplant sites. */
 export const SITE_LOCATIONS = {
-  Baywater: {
+  'Thorndyke Bay': {
     lat: 47.808,
     lng: -122.738,
     region: 'Thorndyke Bay, Hood Canal, WA',
     description:
-      'Baywater Shellfish. 10K-Seed + PolyIC outplants; protected inlet with warmer water and highly variable survival.',
+      '10K-Seed + PolyIC outplants; protected inlet with warmer water and highly variable survival.',
     color: '#2563eb',
   },
   'Sequim Bay': {
@@ -38,12 +38,12 @@ export const SITE_LOCATIONS = {
       'Effort A thermal-hardening + PolyIC outplants. Moderate temperatures with low background mortality.',
     color: '#0891b2',
   },
-  'Goose Point': {
+  'Palix River/Willapa Bay': {
     lat: 46.62,
     lng: -123.86,
     region: 'Palix River, Willapa Bay, WA',
     description:
-      'Goose Point Oysters (Palix River). Multi-year Effort E hardening outplants; estuary site with variable temperature.',
+      'Multi-year Effort E hardening outplants; estuary site with variable temperature.',
     color: '#d97706',
   },
   Westcott: {

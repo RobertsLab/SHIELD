@@ -61,16 +61,16 @@
     }
   },
   "sites": [
-    "Baywater",
+    "Thorndyke Bay",
     "Bainbridge Island",
     "Dabob Bay",
     "Sequim Bay",
-    "Goose Point",
+    "Palix River/Willapa Bay",
     "Westcott"
   ],
   "observations": [
     {
-      "site": "Baywater",
+      "site": "Thorndyke Bay",
       "station_id": "9444900",
       "station_name": "Port Townsend",
       "provider": "NOAA CO-OPS",
@@ -649,7 +649,7 @@
       ]
     },
     {
-      "site": "Goose Point",
+      "site": "Palix River/Willapa Bay",
       "station_id": "46211",
       "station_name": "Grays Harbor (NDBC 46211)",
       "provider": "NOAA NDBC",

@@ -12,6 +12,7 @@ import csv
 import json
 import math
 import os
+import re
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -26,12 +27,12 @@ MONTHS = [
 ]
 SOURCES = [
     {
-        "site": "Baywater",
+        "site": "Thorndyke Bay",
         "repo": "RobertsLab/10K-seed-Cgigas",
         "url": "https://raw.githubusercontent.com/RobertsLab/10K-seed-Cgigas/main/output/baywater_growth.csv",
     },
     {
-        "site": "Goose Point",
+        "site": "Palix River/Willapa Bay",
         "repo": "RobertsLab/project-gigas-conditioning",
         "url": "https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/goosepoint_growth.csv",
     },
@@ -122,6 +123,10 @@ def volume_for(row):
     return number(row.get("Predicted_Volume_Poly", row.get("vol")))
 
 
+def site_slug(site):
+    return re.sub(r"[^A-Z0-9]+", "-", site.upper()).strip("-")
+
+
 records = []
 source_rows = {}
 record_counts = {}
@@ -143,7 +148,7 @@ for source in SOURCES:
         fields = date_fields(dstr)
 
         records.append({
-            "id": f"GROW-{source['site'].upper().replace(' ', '-')}-{dstr}-{idx}",
+            "id": f"GROW-{site_slug(source['site'])}-{dstr}-{idx}",
             **fields,
             "site": source["site"],
             "treatment": treatment,

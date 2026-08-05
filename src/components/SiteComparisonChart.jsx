@@ -12,9 +12,9 @@ import {
 } from 'recharts';
 
 const SITE_COLORS = {
-  Baywater: '#2563eb',
+  'Thorndyke Bay': '#2563eb',
   'Sequim Bay': '#0891b2',
-  'Goose Point': '#d97706',
+  'Palix River/Willapa Bay': '#d97706',
   Westcott: '#6366f1',
 };
 
