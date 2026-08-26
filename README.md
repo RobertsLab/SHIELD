@@ -24,7 +24,7 @@ The website now includes four main views:
 |-------|------|---------|
 | `/` | Dashboard | Filter field observations, compare treatments and sites, inspect time-series charts, and export field summaries |
 | `/map` | Site Map | Explore outplant locations, site summaries, and links back into filtered dashboard views |
-| `/live-data` | Live Data | Review near-live environmental observations, source metadata, source maps, and 4-week OSEL-score context |
+| `/live-data` | Live Data | Review near-live environmental observations, source metadata, source maps, and current-condition OSEL-score context |
 | `/research` | Research Overview | Share project objectives, collaborators, Washington Sea Grant support, and research context |
 
 ## Purpose
@@ -55,7 +55,7 @@ The backend-like work happens before deployment:
 - `scripts/build_survival_observations.py` downloads RobertsLab survival CSV
   outputs and writes `src/data/survivalObservations.json`.
 - `scripts/buildArchivalTemperature.mjs` downloads high-frequency HOBO logger
-  CSVs, aggregates them to daily mean/min/max water temperature, and writes
+  CSVs, aggregates them to daily mean water temperature, and writes
   `src/data/archivalTemperatureData.json`.
 - `scripts/build_live_temperature.py` fetches recent public environmental
   observations from nearby NOAA, USGS, and NANOOS-matched sources and writes
@@ -167,8 +167,11 @@ available, especially `src/data/archivalTemperatureData.json` and
 
 - [Node.js](https://nodejs.org/) 18 or later
 - npm, included with Node.js
-- Python 3. The growth refresh script uses only the standard library; `pandas`
-  is needed only if regenerating `realObservations.json`.
+- Python 3. The growth and survival refresh scripts use only the standard
+  library. Regenerating `realObservations.json` additionally requires `pandas`
+  and `openpyxl`, plus a local `project-gigas-conditioning` checkout at the path
+  configured by `PGC` in `scripts/build_real_observations.py` (currently
+  `/Users/sr320/Documents/GitHub/project-gigas-conditioning`).
 
 ## Install Dependencies
 
