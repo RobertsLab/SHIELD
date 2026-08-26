@@ -56,11 +56,13 @@ export default function SiteMap({ sites, selectedSite, onSelectSite }) {
                     </div>
                     <div>
                       <dt>Mean temp</dt>
-                      <dd>{site.meanTemp} °C</dd>
+                      <dd>{site.meanTemp != null ? `${site.meanTemp} °C` : '—'}</dd>
                     </div>
                     <div>
                       <dt>Final survival</dt>
-                      <dd>{site.finalSurvival}%</dd>
+                      <dd>
+                        {site.finalSurvival != null ? `${site.finalSurvival}%` : '—'}
+                      </dd>
                     </div>
                   </dl>
                   <Link

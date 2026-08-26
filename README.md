@@ -93,10 +93,10 @@ from field, growth, and survival observations. Field rows supply monthly
 logger-temperature (and legacy shell-length growth) values; per-bag survival
 rows carry percent survival; individual growth-volume rows carry predicted
 volume. Each record leaves metrics it does not measure as `null`, and the
-aggregated survival anchors formerly held in the field rows are dropped in favor
-of the per-bag survival dataset to avoid double-counting. Aggregations and
-exports are null-safe, so missing metrics show as unavailable rather than as
-zeroes.
+aggregated survival anchors formerly held in field rows are dropped where a
+per-bag survival dataset replaces them, avoiding double-counting. Field survival
+is retained for sites without a per-bag replacement. Aggregations and exports
+are null-safe, so missing metrics show as unavailable rather than as zeroes.
 
 ### Sites
 
@@ -124,9 +124,8 @@ zeroes.
 - Near-live environmental context, including water temperature, air temperature,
   air pressure, wind, gusts, wave height, tide height, salinity/conductivity
   where available, streamflow where available, and chlorophyll source matches
-- OSEL-Score, a 1-5 heuristic forecast for oyster stress-event likelihood from
-  elevated air temperature coinciding with low-tide exposure over the next four
-  weeks
+- OSEL-Score, a 1-5 current-condition screening heuristic based on the latest
+  observed air temperature and tide height; it is not a forecast
 
 ## Data Sources And Credits
 
@@ -159,7 +158,7 @@ available, especially `src/data/archivalTemperatureData.json` and
 - Field report export for the current filter state
 - Geographic site map with interactive markers
 - Near-live environmental dashboard with source map and source ledger
-- Four-week OSEL-score forecast cards for sites with current air-temperature
+- Current-condition OSEL-score cards for sites with observed air-temperature
   and tide-height inputs
 - Research overview page for objectives, collaborators, Washington Sea Grant
   support, and project summary language

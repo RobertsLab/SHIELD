@@ -87,18 +87,23 @@ export const YEARS = [
 ].sort();
 export const METRICS = ['Growth Volume', 'Temperature', 'Survival'];
 
+const SITES_WITH_REPLICATE_SURVIVAL = new Set(survivalData.sites);
+
 export const mockShellfishData = [
   // realObservations still supplies in-situ temperature (and legacy growth_mm).
-  // Survival now comes from survivalObservations.json (per-bag published CSVs),
-  // so the aggregated survival anchors here are dropped to avoid double-counting.
-  ...realData.observations.map((row) => ({
-    ...row,
-    tag: row.tag ?? null,
-    oyster_number: row.oyster_number ?? null,
-    growth_volume: null,
-    survival_percent: null,
-    survival_source: 'none',
-  })),
+  // Prefer survivalObservations.json where per-bag published CSVs exist. Retain
+  // field survival for sites such as Sequim that have no replacement dataset.
+  ...realData.observations.map((row) => {
+    const hasReplicateReplacement = SITES_WITH_REPLICATE_SURVIVAL.has(row.site);
+    return {
+      ...row,
+      tag: row.tag ?? null,
+      oyster_number: row.oyster_number ?? null,
+      growth_volume: null,
+      survival_percent: hasReplicateReplacement ? null : row.survival_percent,
+      survival_source: hasReplicateReplacement ? 'none' : row.survival_source,
+    };
+  }),
   ...growthData.observations,
   ...survivalData.observations,
 ];
@@ -148,16 +153,20 @@ function formatMean(value, key) {
   return key === 'growth_volume' ? Math.round(value) : round1(value);
 }
 
-/** Latest row per site|treatment that has a non-null value for `key`. */
-function latestWithValue(rows, key) {
-  const latest = new Map();
+/** All rows on the latest date per site|treatment with a non-null `key`. */
+function finalDateRowsWithValue(rows, key) {
+  const latestDates = new Map();
   for (const row of rows) {
     if (row[key] == null) continue;
     const mapKey = `${row.site}|${row.treatment}`;
-    const existing = latest.get(mapKey);
-    if (!existing || row.date > existing.date) latest.set(mapKey, row);
+    const existingDate = latestDates.get(mapKey);
+    if (!existingDate || row.date > existingDate) latestDates.set(mapKey, row.date);
   }
-  return [...latest.values()];
+  return rows.filter(
+    (row) =>
+      row[key] != null &&
+      row.date === latestDates.get(`${row.site}|${row.treatment}`)
+  );
 }
 
 export function filterData(data, filters) {
@@ -184,7 +193,7 @@ export function computeSummaryStats(filtered) {
   const meanGrowth = meanOf(filtered, 'growth_volume');
   const meanTemp = meanOf(filtered, 'temperature_C');
 
-  const finalRows = latestWithValue(filtered, 'survival_percent');
+  const finalRows = finalDateRowsWithValue(filtered, 'survival_percent');
   const finalSurvival = meanOf(finalRows, 'survival_percent');
 
   const byTreatment = {};
@@ -250,9 +259,10 @@ export function getTreatmentComparisonData(filtered, metric = 'survival') {
   const isSurvival = metric === 'survival';
   const key = isSurvival ? 'survival_percent' : 'growth_volume';
 
-  const rows = isSurvival
-    ? latestWithValue(filtered, key)
-    : aggregateMean(filtered, key);
+  const metricRows = isSurvival
+    ? finalDateRowsWithValue(filtered, key)
+    : filtered;
+  const rows = aggregateMean(metricRows, key);
 
   const bySite = {};
   for (const row of rows) {
@@ -299,7 +309,7 @@ export function getSiteComparisonData(filtered, metric = 'growth') {
   };
   const { key, useFinal } = configs[metric];
 
-  const rows = useFinal ? latestWithValue(filtered, key) : filtered;
+  const rows = useFinal ? finalDateRowsWithValue(filtered, key) : filtered;
   const bySite = {};
   for (const row of rows) {
     if (row[key] == null) continue;
@@ -322,7 +332,7 @@ export function getSiteComparisonData(filtered, metric = 'growth') {
 }
 
 export function getSiteGeographicSummaries(data) {
-  const finalRows = latestWithValue(data, 'survival_percent');
+  const finalRows = finalDateRowsWithValue(data, 'survival_percent');
 
   return SITES.map((site) => {
     const siteRows = data.filter((r) => r.site === site);

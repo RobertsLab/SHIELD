@@ -32,7 +32,6 @@ const METRIC_ORDER = [
 
 const VERY_LOW_TIDE_M = 0.3;
 const TIDE_WATCH_M = 0.6;
-const OSEL_FORECAST_DAYS = 28;
 const ELEVATED_AIR_TEMP_C = 22;
 const HIGH_AIR_TEMP_C = 25;
 const EXTREME_AIR_TEMP_C = 28;
@@ -66,114 +65,74 @@ function formatMetric(metric) {
   return metric.note ? `${value} · ${metric.note}` : value;
 }
 
-function formatForecastDate(date) {
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    timeZone: PACIFIC_TIME_ZONE,
-  });
-}
-
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function getSitePhase(site) {
-  return [...site].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 14;
-}
-
-function getOselScore(projectedAirTemp, projectedLowTide) {
+function getOselScore(airTemp, tideHeight) {
   let points = 1;
 
-  if (projectedAirTemp >= EXTREME_AIR_TEMP_C) {
+  if (airTemp >= EXTREME_AIR_TEMP_C) {
     points += 2.4;
-  } else if (projectedAirTemp >= HIGH_AIR_TEMP_C) {
+  } else if (airTemp >= HIGH_AIR_TEMP_C) {
     points += 1.7;
-  } else if (projectedAirTemp >= ELEVATED_AIR_TEMP_C) {
+  } else if (airTemp >= ELEVATED_AIR_TEMP_C) {
     points += 0.9;
   }
 
-  if (projectedLowTide <= 0) {
+  if (tideHeight <= 0) {
     points += 1.7;
-  } else if (projectedLowTide <= VERY_LOW_TIDE_M) {
+  } else if (tideHeight <= VERY_LOW_TIDE_M) {
     points += 1.25;
-  } else if (projectedLowTide <= TIDE_WATCH_M) {
+  } else if (tideHeight <= TIDE_WATCH_M) {
     points += 0.75;
   }
 
-  if (projectedAirTemp >= HIGH_AIR_TEMP_C && projectedLowTide <= VERY_LOW_TIDE_M) {
+  if (airTemp >= HIGH_AIR_TEMP_C && tideHeight <= VERY_LOW_TIDE_M) {
     points += 0.7;
   }
 
   return clamp(Math.round(points), 1, 5);
 }
 
-function getOselForecast(observation, generatedAt) {
+function getOselScreening(observation) {
   const airTemp = observation.metrics?.air_temperature_C?.value;
   const tideHeight = observation.metrics?.tide_height_m?.value;
-  const nextTideHeight = observation.metrics?.next_tide_height_m?.value;
   const hasInputs = Number.isFinite(airTemp) && Number.isFinite(tideHeight);
 
-  if (!hasInputs) return [];
+  if (!hasInputs) return null;
 
-  const startDate = generatedAt ? new Date(generatedAt) : new Date();
-  const baselineLowTide = Number.isFinite(nextTideHeight)
-    ? Math.min(tideHeight, nextTideHeight)
-    : tideHeight;
-  const sitePhase = getSitePhase(observation.site);
-
-  return Array.from({ length: OSEL_FORECAST_DAYS }, (_, index) => {
-    const date = new Date(startDate);
-    date.setDate(startDate.getDate() + index + 1);
-
-    const warmCycle = Math.sin((index + sitePhase) * 0.78);
-    const springTideCycle = Math.cos(((index + sitePhase) / OSEL_FORECAST_DAYS) * Math.PI * 2);
-    const projectedAirTemp = airTemp + 3.5 + warmCycle * 2.2 + index * 0.08;
-    const projectedLowTide = clamp(
-      baselineLowTide - 1.05 - springTideCycle * 0.5,
-      -0.6,
-      1.6
-    );
-    const score = getOselScore(projectedAirTemp, projectedLowTide);
-
-    return {
-      date,
-      label: formatForecastDate(date),
-      projectedAirTemp,
-      projectedLowTide,
-      score,
-    };
-  });
+  return {
+    airTemp,
+    tideHeight,
+    score: getOselScore(airTemp, tideHeight),
+  };
 }
 
 function getScoreLabel(score) {
-  if (score >= 5) return 'High likelihood';
-  if (score === 4) return 'Elevated likelihood';
-  if (score === 3) return 'Moderate likelihood';
-  if (score === 2) return 'Low-moderate likelihood';
-  return 'Low likelihood';
+  if (score >= 5) return 'High current concern';
+  if (score === 4) return 'Elevated current concern';
+  if (score === 3) return 'Moderate current concern';
+  if (score === 2) return 'Low-moderate current concern';
+  return 'Low current concern';
 }
 
-function OselScoreForecast({ observations, generatedAt }) {
-  const forecasts = observations.map((observation) => {
-    const days = getOselForecast(observation, generatedAt);
-    const peak = days.reduce(
-      (highest, day) => (day.score > highest.score ? day : highest),
-      days[0] ?? null
-    );
-    return { site: observation.site, days, peak };
-  });
+function OselScoreScreening({ observations }) {
+  const screenings = observations.map((observation) => ({
+    site: observation.site,
+    screening: getOselScreening(observation),
+  }));
 
   return (
-    <div className="osel-score-section" aria-label="OSEL-Score four-week forecast">
+    <div className="osel-score-section" aria-label="Current OSEL screening score">
       <div className="chart-header-row">
         <h2 className="section-title">OSEL-Score</h2>
-        <span className="live-temperature-badge">Next 4 weeks</span>
+        <span className="live-temperature-badge">Current conditions</span>
       </div>
       <p className="chart-caption">
-        Running likelihood score for oyster stress events from elevated air
-        temperature coinciding with low tide exposure. Scores run 1-5, where 5
-        is high likelihood and 1 is low likelihood.
+        Heuristic screening score based only on the latest observed air
+        temperature and tide height. It is not a forecast. Scores run 1-5,
+        where 5 indicates higher current concern and 1 indicates lower concern.
       </p>
 
       <div className="osel-score-legend" aria-label="OSEL-Score color scale">
@@ -185,47 +144,33 @@ function OselScoreForecast({ observations, generatedAt }) {
       </div>
 
       <div className="osel-score-grid">
-        {forecasts.map(({ site, days, peak }) => (
+        {screenings.map(({ site, screening }) => (
           <article key={site} className="osel-score-card">
             <div className="osel-score-card-header">
               <div>
                 <h3>{site}</h3>
-                <p>{peak ? `Peak ${peak.label}` : 'Insufficient live inputs'}</p>
+                <p>{screening ? 'Latest observed inputs' : 'Insufficient live inputs'}</p>
               </div>
-              {peak ? (
-                <strong className={`osel-score-badge osel-score-${peak.score}`}>
-                  {peak.score}
+              {screening ? (
+                <strong className={`osel-score-badge osel-score-${screening.score}`}>
+                  {screening.score}
                 </strong>
               ) : (
                 <strong className="osel-score-badge osel-score-unavailable">--</strong>
               )}
             </div>
 
-            {peak ? (
+            {screening ? (
               <>
-                <p className="osel-score-summary">{getScoreLabel(peak.score)}</p>
-                <div className="osel-forecast-strip">
-                  {days.map((day) => (
-                    <div
-                      key={`${site}-${day.label}`}
-                      className={`osel-forecast-day osel-score-${day.score}`}
-                      title={`${day.label}: OSEL-Score ${day.score}; air ${day.projectedAirTemp.toFixed(
-                        1
-                      )} °C; low tide ${day.projectedLowTide.toFixed(1)} m MLLW`}
-                    >
-                      <span>{day.label}</span>
-                      <strong>{day.score}</strong>
-                    </div>
-                  ))}
-                </div>
+                <p className="osel-score-summary">{getScoreLabel(screening.score)}</p>
                 <dl className="osel-score-drivers">
                   <div>
-                    <dt>Peak air</dt>
-                    <dd>{peak.projectedAirTemp.toFixed(1)} °C</dd>
+                    <dt>Observed air</dt>
+                    <dd>{screening.airTemp.toFixed(1)} °C</dd>
                   </div>
                   <div>
-                    <dt>Peak low tide</dt>
-                    <dd>{peak.projectedLowTide.toFixed(1)} m MLLW</dd>
+                    <dt>Observed tide</dt>
+                    <dd>{screening.tideHeight.toFixed(1)} m MLLW</dd>
                   </div>
                 </dl>
               </>
@@ -572,7 +517,7 @@ export default function LiveTemperaturePanel() {
         </div>
       </div>
 
-      <OselScoreForecast observations={observations} generatedAt={generatedAt} />
+      <OselScoreScreening observations={observations} />
 
       <p className="chart-source-note">
         Snapshot generated {formatGeneratedAt(generatedAt)}.

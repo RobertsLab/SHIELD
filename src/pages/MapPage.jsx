@@ -59,11 +59,17 @@ export default function MapPage() {
                   </div>
                   <div>
                     <dt>Mean temperature</dt>
-                    <dd>{activeSite.meanTemp} °C</dd>
+                    <dd>
+                      {activeSite.meanTemp != null ? `${activeSite.meanTemp} °C` : '—'}
+                    </dd>
                   </div>
                   <div>
                     <dt>Final survival</dt>
-                    <dd>{activeSite.finalSurvival}%</dd>
+                    <dd>
+                      {activeSite.finalSurvival != null
+                        ? `${activeSite.finalSurvival}%`
+                        : '—'}
+                    </dd>
                   </div>
                   <div>
                     <dt>Records</dt>
@@ -107,7 +113,7 @@ export default function MapPage() {
                   <span className="site-list-region">{site.region}</span>
                 </div>
                 <span className="site-list-survival">
-                  {site.finalSurvival}% surv.
+                  {site.finalSurvival != null ? `${site.finalSurvival}% surv.` : '—'}
                 </span>
               </button>
             ))}
