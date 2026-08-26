@@ -82,7 +82,7 @@ Current committed data summary:
 | Dataset | File | Description |
 |---------|------|-------------|
 | Field observations | `src/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Thorndyke Bay 10K-Seed survival anchors |
-| Growth observations | `src/data/growthObservations.json` | 24,704 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
+| Growth observations | `src/data/growthObservations.json` | 27,920 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
 | Survival observations | `src/data/survivalObservations.json` | 714 per-bag percent-survival records from Thorndyke Bay, Palix River/Willapa Bay, and Westcott survival CSV outputs (Westcott per assessment date; Thorndyke Bay and Palix River/Willapa Bay total survival) |
 | Archival temperature | `src/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
 | Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
