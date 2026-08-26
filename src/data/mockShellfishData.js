@@ -92,7 +92,7 @@ const SITES_WITH_REPLICATE_SURVIVAL = new Set(survivalData.sites);
 export const mockShellfishData = [
   // realObservations still supplies in-situ temperature (and legacy growth_mm).
   // Prefer survivalObservations.json where per-bag published CSVs exist. Retain
-  // field survival for sites such as Sequim that have no replacement dataset.
+  // field survival for sites that have no replacement dataset.
   ...realData.observations.map((row) => {
     const hasReplicateReplacement = SITES_WITH_REPLICATE_SURVIVAL.has(row.site);
     return {

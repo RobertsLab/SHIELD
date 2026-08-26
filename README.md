@@ -82,8 +82,8 @@ Current committed data summary:
 | Dataset | File | Description |
 |---------|------|-------------|
 | Field observations | `src/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Thorndyke Bay 10K-Seed survival anchors |
-| Growth observations | `src/data/growthObservations.json` | 27,920 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
-| Survival observations | `src/data/survivalObservations.json` | 714 per-bag percent-survival records from Thorndyke Bay, Palix River/Willapa Bay, and Westcott survival CSV outputs (Westcott per assessment date; Thorndyke Bay and Palix River/Willapa Bay total survival) |
+| Growth observations | `src/data/growthObservations.json` | 29,836 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
+| Survival observations | `src/data/survivalObservations.json` | 738 per-bag percent-survival records from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay PolyIC, and Westcott survival CSV outputs (Sequim Bay PolyIC and Westcott per assessment date; Thorndyke Bay and Palix River/Willapa Bay total survival) |
 | Archival temperature | `src/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
 | Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
 | Site metadata | `src/data/mockShellfishData.js` | Site coordinates, regions, descriptions, colors, filter helpers, and chart aggregation helpers |
@@ -136,7 +136,7 @@ when reusing the dashboard or derived data products.
 |--------|----------|------------|
 | RobertsLab `project-gigas-conditioning` | Palix River/Willapa Bay, Sequim Bay, and Westcott outplant survival/growth inputs; Palix River/Willapa Bay and Westcott survival CSV outputs; environmental temperature CSVs for Sequim Bay, Palix River/Willapa Bay, and Westcott | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/build_survival_observations.py`, `scripts/buildArchivalTemperature.mjs` |
 | RobertsLab `10K-seed-Cgigas` | Thorndyke Bay 10K-Seed survival CSV output, Thorndyke Bay growth CSV, and Thorndyke Bay temperature CSV | `scripts/build_real_observations.py`, `scripts/build_growth_observations.py`, `scripts/build_survival_observations.py`, `scripts/buildArchivalTemperature.mjs` |
-| RobertsLab `polyIC-larvae` | Sequim Bay PolyIC growth CSV | `scripts/build_growth_observations.py` |
+| RobertsLab `polyIC-larvae` | Sequim Bay PolyIC growth and survival CSV outputs | `scripts/build_growth_observations.py`, `scripts/build_survival_observations.py` |
 | NOAA National Data Buoy Center (NDBC) realtime feeds | Nearby buoy meteorological, wave, and water-condition observations | `scripts/build_live_temperature.py` |
 | NOAA CO-OPS Tides and Currents API | Water temperature, air temperature, pressure, humidity, salinity, conductivity, wind, water level, and tide predictions from nearby stations | `scripts/build_live_temperature.py` |
 | USGS National Water Information System (NWIS) Instantaneous Values API | Nearby watershed streamflow context for Dabob Bay | `scripts/build_live_temperature.py` |

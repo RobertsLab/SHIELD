@@ -35,7 +35,12 @@ MONTHS = [
 ]
 
 # Survival value column varies by source; checked in this order per row.
-SURVIVAL_KEYS = ("survival", "percent_survival", "proportion_remaining")
+SURVIVAL_KEYS = (
+    "survival",
+    "percent_survival",
+    "proportion_remaining",
+    "prop_survival",
+)
 
 SOURCES = [
     {
@@ -51,6 +56,12 @@ SOURCES = [
         "url": "https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/goosepoint_survival.csv",
         # Total survival, no date column; stamped with the latest program assessment.
         "default_date": "2026-05-22",
+    },
+    {
+        "site": "Sequim Bay",
+        "repo": "RobertsLab/polyIC-larvae",
+        "url": "https://raw.githubusercontent.com/RobertsLab/polyIC-larvae/main/output/sequim_polyic_survival.csv",
+        "default_experiment": "PolyIC",
     },
     {
         "site": "Westcott",
@@ -112,7 +123,14 @@ def normal_treatment(raw_treatment, experiment=""):
 
 
 def tag_for(row):
-    for key in ("purple.tag", "corrected_tag", "bag_tag_num", "tag", "bag"):
+    for key in (
+        "purple.tag",
+        "corrected_tag",
+        "bag_tag_num",
+        "outplant_tag",
+        "tag",
+        "bag",
+    ):
         if row.get(key):
             return row[key]
     return None
@@ -146,7 +164,7 @@ for source in SOURCES:
 
         raw_date = row.get("date") or source.get("default_date")
         dstr = parse_date(raw_date)
-        experiment = row.get("experiment") or ""
+        experiment = row.get("experiment") or source.get("default_experiment") or ""
         treatment = normal_treatment(row.get("treatment"), experiment)
         tag = tag_for(row)
         fields = date_fields(dstr)
@@ -199,7 +217,7 @@ bundle = {
         "sourceRows": source_rows,
         "recordCounts": record_counts,
         "survivalMetric": "Percent survival per bag/replicate (0-100)",
-        "notes": "Westcott has survival at each time point; Thorndyke Bay and Palix River/Willapa Bay report total (end-of-period) survival.",
+        "notes": "Westcott and Sequim Bay PolyIC have survival at each time point; Thorndyke Bay and Palix River/Willapa Bay report total (end-of-period) survival.",
         "sourceUrls": [source["url"] for source in SOURCES],
     },
     "sites": sites,
