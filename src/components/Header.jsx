@@ -42,6 +42,12 @@ export default function Header() {
             >
               Site Map
             </NavLink>
+            <a
+              href="https://sr320.github.io/conditioning-atlas/"
+              className="nav-link"
+            >
+              Conditioning Atlas
+            </a>
           </nav>
         </div>
         <p className="disclaimer">
