@@ -8,15 +8,15 @@ import ArchivalTemperatureChart from '../components/ArchivalTemperatureChart';
 import TreatmentComparisonChart from '../components/TreatmentComparisonChart';
 import SiteComparisonChart from '../components/SiteComparisonChart';
 import DataTable from '../components/DataTable';
+import DataStatus from '../components/DataStatus';
+import { useObservations } from '../data/resources';
 import {
-  mockShellfishData,
-  SITES,
   filterData,
   computeSummaryStats,
   getTimeSeriesData,
   getTreatmentComparisonData,
   getSiteComparisonData,
-} from '../data/mockShellfishData';
+} from '../data/observations';
 
 const DEFAULT_FILTERS = {
   site: 'All Sites',
@@ -25,21 +25,26 @@ const DEFAULT_FILTERS = {
   year: 'All Years',
 };
 
+const EMPTY = [];
+
 export default function DashboardPage() {
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const observations = useObservations();
+  const dataset = observations.data;
+  const records = dataset?.records ?? EMPTY;
+  const sites = dataset?.sites ?? EMPTY;
+  const treatments = dataset?.treatments ?? EMPTY;
+  const years = dataset?.years ?? EMPTY;
 
   useEffect(() => {
     const siteParam = searchParams.get('site');
-    if (siteParam && SITES.includes(siteParam)) {
+    if (siteParam && sites.includes(siteParam)) {
       setFilters((prev) => ({ ...prev, site: siteParam }));
     }
-  }, [searchParams]);
+  }, [searchParams, sites]);
 
-  const filteredData = useMemo(
-    () => filterData(mockShellfishData, filters),
-    [filters]
-  );
+  const filteredData = useMemo(() => filterData(records, filters), [records, filters]);
 
   const summaryStats = useMemo(
     () => computeSummaryStats(filteredData),
@@ -62,23 +67,43 @@ export default function DashboardPage() {
   );
 
   const siteGrowthData = useMemo(
-    () => getSiteComparisonData(filteredData, 'growth'),
-    [filteredData]
+    () => getSiteComparisonData(filteredData, 'growth', sites),
+    [filteredData, sites]
   );
 
   const siteSurvivalData = useMemo(
-    () => getSiteComparisonData(filteredData, 'survival'),
-    [filteredData]
+    () => getSiteComparisonData(filteredData, 'survival', sites),
+    [filteredData, sites]
   );
 
   const siteTempData = useMemo(
-    () => getSiteComparisonData(filteredData, 'temperature'),
-    [filteredData]
+    () => getSiteComparisonData(filteredData, 'temperature', sites),
+    [filteredData, sites]
   );
+
+  if (observations.status !== 'ready') {
+    return (
+      <main className="dashboard-main">
+        <DataStatus
+          status={observations.status}
+          error={observations.error}
+          retry={observations.retry}
+          label="field observations"
+        />
+        <ArchivalTemperatureChart />
+      </main>
+    );
+  }
 
   return (
     <main className="dashboard-main">
-      <Filters filters={filters} onChange={setFilters} />
+      <Filters
+        filters={filters}
+        onChange={setFilters}
+        sites={sites}
+        treatments={treatments}
+        years={years}
+      />
       <SummaryCards stats={summaryStats} />
       <TimeSeriesChart data={timeSeriesData} metric={filters.metric} />
       <ArchivalTemperatureChart />
@@ -86,6 +111,7 @@ export default function DashboardPage() {
         <TreatmentComparisonChart
           survivalData={treatmentSurvivalData}
           growthData={treatmentGrowthData}
+          treatments={treatments}
         />
         <SiteComparisonChart
           growthData={siteGrowthData}

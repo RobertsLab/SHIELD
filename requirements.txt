@@ -1,0 +1,6 @@
+# Python dependencies for the data build scripts in scripts/.
+# build_growth_observations.py, build_survival_observations.py, and
+# build_live_temperature.py use only the standard library.
+# build_real_observations.py needs the packages below.
+pandas>=2.2
+openpyxl>=3.1

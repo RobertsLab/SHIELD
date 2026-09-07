@@ -156,18 +156,20 @@ Generally reasonable: semantic sections, `aria-label`s on control groups, `role=
 5. Label time series points by date, not month. Done; no duplicate labels remain.
 6. Skip the deploy when the snapshot did not change. Done: the refresh workflow now dispatches `deploy.yml` only after committing a changed snapshot, and the `workflow_run` trigger is removed from `deploy.yml`.
 
-**Medium (a few days)**
+**Medium (a few days)**, addressed on this branch
 
-7. Move data bundles to `public/data/` and fetch per route; split live snapshot from app code.
-8. Emit growth data in a compact shape; drop constant columns into `meta`.
-9. Per-site time series lines; same final-date rule for growth and survival.
-10. Add Vitest with fixtures for the aggregation functions; add a `pull_request` build workflow.
-11. Extract shared Python helpers; add `requirements.txt`; add `npm run build:data`.
-12. Make `build_real_observations.py` reproducible from public URLs.
+7. Move data bundles to `public/data/` and fetch per route; split live snapshot from app code. Done: bundles are fetched through a small cached store in `src/data/resources.js`, routes are lazy-loaded, and the JavaScript entry chunk went from 19.9 MB to 197 kB (plus a 415 kB dashboard chunk and a 154 kB Leaflet chunk loaded only where needed). The live snapshot is a separate 33 kB file.
+8. Emit growth data in a compact shape. Done: a positional bundle format with lookups and constants, encoded by `scripts/shield_data.py` and decoded by `src/data/bundleFormat.js`. Growth data is 1.45 MB raw and 189 kB gzip, down from 19.9 MB and 422 kB. The committed data was re-encoded losslessly (round-trip verified).
+9. Per-site time series lines; same final-date rule for growth and survival. Done: the time series draws one line per site with per-site error bars and counts; treatment and site comparisons, the summary card, and the map summaries all use the latest assessment for growth as well as survival.
+10. Vitest and a pull request workflow. Done: 36 tests cover the bundle decoder, the merge rule, every aggregation function, and the schema and vocabularies of the committed bundles. `.github/workflows/ci.yml` runs tests and a build on pull requests and non-main branches.
+11. Shared Python helpers, `requirements.txt`, `npm run build:data`. Done: `scripts/shield_data.py` holds the treatment mapping, date parsing, fetch with retries, and the bundle encoder; the three observation scripts import it.
+12. Make `build_real_observations.py` reproducible from public URLs. Done: inputs are read from the public repository by default, or from a local checkout via `PGC_SOURCE`. All three observation scripts were run end to end against upstream on 2026-09-07. Survival matched the committed data exactly; growth differed by 0.1 on one value and the field bundle differed on seven Sequim and Palix rows because upstream has been updated since June. Those refreshed values were not committed here, so the change stays a pure refactor; run `npm run build:data` to take them.
+
+Also folded into this work because the module was rewritten anyway: `mockShellfishData.js` is replaced by `observations.js`, `resources.js`, and `siteMetadata.js` (part of item 16 below); `npm run deploy` was removed.
 
 **Larger (plan for)**
 
 13. Precompute aggregates at build time and load raw rows on demand.
 14. Move the hourly snapshot off `main` history.
 15. Dependency upgrade pass (React 19, Recharts 3, react-leaflet 5, react-router 7, Vite 8).
-16. Rename `mockShellfishData` and unify site constants into one shared file.
+16. Unify the remaining site constants (the Python live script and the live panel's environmental-only sites) into one shared file. The `mockShellfishData` rename is done.

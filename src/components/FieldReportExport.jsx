@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { SITE_LOCATIONS } from '../data/mockShellfishData';
+import { SITE_LOCATIONS } from '../data/siteMetadata';
 
 /**
  * Upper bound on rows rendered in the printed appendix. The full record set is
@@ -66,7 +66,7 @@ function buildCsv(data, filters, stats) {
     ['Date range', getDateRange(data)],
     ['Record count', data.length],
     ...getFilterSummary(filters).map(([label, value]) => [`Filter: ${label}`, value]),
-    ['Mean growth volume', stats.meanGrowth ?? ''],
+    ['Final growth volume', stats.finalGrowth ?? ''],
     ['Mean temperature (deg C)', stats.meanTemp ?? ''],
     ['Final survival (%)', stats.finalSurvival ?? ''],
     ['Best-performing treatment', stats.bestTreatment],

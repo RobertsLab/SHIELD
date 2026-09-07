@@ -7,7 +7,7 @@ Why a build step instead of fetching in the browser? The richest / closest feeds
 do NOT send CORS headers, so a static GitHub Pages dashboard cannot fetch them
 client-side. This script runs server-side (locally or in GitHub Actions), tries
 an ordered list of candidate stations per site, and commits the first valid
-reading as `src/data/liveTemperature.json`. The Action re-runs on a schedule, so
+reading as `public/data/liveTemperature.json`. The Action re-runs on a schedule, so
 the committed snapshot stays "near-live" (e.g. hourly) without any backend.
 
 Sources (no API key required):
@@ -34,7 +34,7 @@ from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, ".."))
-OUT = os.path.join(REPO, "src", "data", "liveTemperature.json")
+OUT = os.path.join(REPO, "public", "data", "liveTemperature.json")
 
 # Drop a reading if its timestamp is older than this many hours (stale sensor).
 MAX_AGE_HOURS = 48

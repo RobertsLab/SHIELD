@@ -1,6 +1,7 @@
-import liveTemperature from '../data/liveTemperature.json';
 import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useLiveTemperature } from '../data/resources';
+import DataStatus from './DataStatus';
 
 const LIVE_SITE_LOCATIONS = {
   'Thorndyke Bay': { lat: 47.808, lon: -122.738, color: '#2563eb' },
@@ -428,7 +429,25 @@ function LiveSourceLedger({ rows }) {
 }
 
 export default function LiveTemperaturePanel() {
-  const { observations, description, generatedAt, maxAgeHours } = liveTemperature;
+  const live = useLiveTemperature();
+  if (live.status !== 'ready') {
+    return (
+      <section className="card" aria-label="Live environmental snapshot">
+        <h2 className="section-title">Live Environmental Snapshot</h2>
+        <DataStatus
+          status={live.status}
+          error={live.error}
+          retry={live.retry}
+          label="the live environmental snapshot"
+        />
+      </section>
+    );
+  }
+  return <LiveTemperaturePanelBody bundle={live.data} />;
+}
+
+function LiveTemperaturePanelBody({ bundle }) {
+  const { observations, description, generatedAt, maxAgeHours } = bundle;
   const sourceRows = getSourceRows(observations);
 
   return (

@@ -1,6 +1,6 @@
-import { SITES, TREATMENTS, METRICS, YEARS } from '../data/mockShellfishData';
+import { METRICS } from '../data/siteMetadata';
 
-export default function Filters({ filters, onChange }) {
+export default function Filters({ filters, onChange, sites, treatments, years }) {
   const handleChange = (field) => (e) => {
     onChange({ ...filters, [field]: e.target.value });
   };
@@ -13,7 +13,7 @@ export default function Filters({ filters, onChange }) {
           <span className="filter-label">Site</span>
           <select value={filters.site} onChange={handleChange('site')}>
             <option value="All Sites">All Sites</option>
-            {SITES.map((s) => (
+            {sites.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
@@ -25,7 +25,7 @@ export default function Filters({ filters, onChange }) {
           <span className="filter-label">Treatment</span>
           <select value={filters.treatment} onChange={handleChange('treatment')}>
             <option value="All Treatments">All Treatments</option>
-            {TREATMENTS.map((t) => (
+            {treatments.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>
@@ -48,7 +48,7 @@ export default function Filters({ filters, onChange }) {
           <span className="filter-label">Year</span>
           <select value={filters.year} onChange={handleChange('year')}>
             <option value="All Years">All Years</option>
-            {YEARS.map((y) => (
+            {years.map((y) => (
               <option key={y} value={y}>
                 {y}
               </option>

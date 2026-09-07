@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import { MAP_CENTER, MAP_ZOOM } from '../data/mockShellfishData';
 import 'leaflet/dist/leaflet.css';
 
 export default function SiteMap({ sites, selectedSite, onSelectSite }) {
@@ -19,8 +18,6 @@ export default function SiteMap({ sites, selectedSite, onSelectSite }) {
       <MapContainer
         bounds={bounds}
         boundsOptions={{ padding: [40, 40] }}
-        center={[MAP_CENTER.lat, MAP_CENTER.lng]}
-        zoom={MAP_ZOOM}
         scrollWheelZoom
         className="site-map"
       >
@@ -51,8 +48,8 @@ export default function SiteMap({ sites, selectedSite, onSelectSite }) {
                   <p className="map-popup-region">{site.region}</p>
                   <dl className="map-popup-stats">
                     <div>
-                      <dt>Mean growth volume</dt>
-                      <dd>{site.meanGrowth?.toLocaleString() ?? '—'}</dd>
+                      <dt>Final growth volume</dt>
+                      <dd>{site.finalGrowth?.toLocaleString() ?? '—'}</dd>
                     </div>
                     <div>
                       <dt>Mean temp</dt>

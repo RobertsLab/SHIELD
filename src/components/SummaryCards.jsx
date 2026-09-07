@@ -1,12 +1,12 @@
 export default function SummaryCards({ stats }) {
   const cards = [
     {
-      label: 'Mean Growth Volume',
+      label: 'Final Growth Volume',
       value:
-        stats.meanGrowth != null
-          ? stats.meanGrowth.toLocaleString()
+        stats.finalGrowth != null
+          ? stats.finalGrowth.toLocaleString()
           : '—',
-      detail: 'Predicted volume across filtered oysters',
+      detail: 'Mean predicted volume at the latest assessment per group',
     },
     {
       label: 'Mean Temperature',
@@ -17,7 +17,7 @@ export default function SummaryCards({ stats }) {
       label: 'Final Survival',
       value:
         stats.finalSurvival != null ? `${stats.finalSurvival}%` : '—',
-      detail: 'Mean end-of-period survival by group',
+      detail: 'Mean survival at the latest assessment per group',
     },
     {
       label: 'Best-performing Treatment',

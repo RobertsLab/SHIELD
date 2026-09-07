@@ -10,8 +10,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { SITE_LOCATIONS } from '../data/mockShellfishData';
-import archivalTemperature from '../data/archivalTemperatureData.json';
+import { siteColor } from '../data/siteMetadata';
+import { useArchivalTemperature } from '../data/resources';
+import DataStatus from './DataStatus';
 
 function ArchivalTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
@@ -46,7 +47,25 @@ function formatRange(start, end) {
 }
 
 export default function ArchivalTemperatureChart() {
-  const { series, sites, meta, generatedAt } = archivalTemperature;
+  const archival = useArchivalTemperature();
+  if (archival.status !== 'ready') {
+    return (
+      <section className="chart-section card">
+        <h2 className="section-title">Archival Water Temperature</h2>
+        <DataStatus
+          status={archival.status}
+          error={archival.error}
+          retry={archival.retry}
+          label="archival temperature"
+        />
+      </section>
+    );
+  }
+  return <ArchivalTemperatureChartBody bundle={archival.data} />;
+}
+
+function ArchivalTemperatureChartBody({ bundle }) {
+  const { series, sites, meta, generatedAt } = bundle;
   const [activeSites, setActiveSites] = useState(() => new Set(sites));
 
   const toggleSite = (site) => {
@@ -81,7 +100,7 @@ export default function ArchivalTemperatureChart() {
       <div className="archival-site-toggles">
         {sites.map((site) => {
           const on = activeSites.has(site);
-          const color = SITE_LOCATIONS[site]?.color ?? '#64748b';
+          const color = siteColor(site);
           return (
             <button
               key={site}
@@ -132,7 +151,7 @@ export default function ArchivalTemperatureChart() {
                   type="monotone"
                   dataKey={site}
                   name={site}
-                  stroke={SITE_LOCATIONS[site]?.color ?? '#64748b'}
+                  stroke={siteColor(site)}
                   strokeWidth={1.75}
                   dot={false}
                   activeDot={{ r: 4 }}

@@ -10,8 +10,9 @@ so users can compare growth, survival, temperature, site conditions, source
 coverage, and treatment outcomes in one browser-based view.
 
 The app is built with React, Vite, Recharts, Leaflet, and React Router. It is
-deployed as a static single-page app, with data prepared ahead of time by build
-scripts rather than by a runtime application server.
+deployed as a static single-page app. Data is prepared ahead of time by build
+scripts into compact JSON bundles under `public/data/`, which the app fetches at
+runtime per route; there is no application server.
 
 ## Website
 
@@ -43,23 +44,36 @@ helps users:
 
 ## How It Works
 
-SHIELD has no browser-facing backend. The deployed site loads committed JSON
-bundles from `src/data/` and renders them entirely in the React app.
+SHIELD has no browser-facing backend. The deployed site fetches committed JSON
+bundles from `public/data/` when a route needs them (the dashboard and map load
+the observation bundles, the live-data page loads the live snapshot) and renders
+them entirely in the React app. Keeping data out of the JavaScript bundle means
+the Research page never downloads the growth dataset, and the hourly live
+snapshot caches independently of the application code.
 
 The backend-like work happens before deployment:
 
-- `scripts/build_real_observations.py` reads RobertsLab observation files and
-  writes `src/data/realObservations.json`.
+- `scripts/build_real_observations.py` reads RobertsLab field observation files
+  from the public `project-gigas-conditioning` repository (or a local checkout
+  via `PGC_SOURCE`) and writes `public/data/realObservations.json`.
 - `scripts/build_growth_observations.py` downloads RobertsLab growth CSV
-  outputs and writes `src/data/growthObservations.json`.
+  outputs and writes `public/data/growthObservations.json`.
 - `scripts/build_survival_observations.py` downloads RobertsLab survival CSV
-  outputs and writes `src/data/survivalObservations.json`.
+  outputs and writes `public/data/survivalObservations.json`.
 - `scripts/buildArchivalTemperature.mjs` downloads high-frequency HOBO logger
   CSVs, aggregates them to daily mean/min/max water temperature, and writes
-  `src/data/archivalTemperatureData.json`.
+  `public/data/archivalTemperatureData.json`.
 - `scripts/build_live_temperature.py` fetches recent public environmental
   observations from nearby NOAA, USGS, and NANOOS-matched sources and writes
-  `src/data/liveTemperature.json`.
+  `public/data/liveTemperature.json`.
+- `scripts/shield_data.py` holds the helpers the observation scripts share:
+  treatment normalization, date parsing, HTTP fetching with retries, and the
+  compact bundle encoder.
+- `npm run build:data` runs the four static builders in dependency order
+  (archival temperature first, because the field observations reuse its monthly
+  means).
+- `.github/workflows/ci.yml` runs the unit tests and a production build on
+  pull requests and non-main branches.
 - `.github/workflows/live-temperature.yml` refreshes the live environmental
   snapshot hourly, commits it only when the JSON changes, and dispatches the
   deploy workflow only in that case.
@@ -73,23 +87,36 @@ directly from the browser because of CORS or credential constraints.
 
 ## Data
 
-The historical placeholder dataset has been replaced with real observation
-records. The `mockShellfishData` export name remains for component compatibility,
-but it now combines `src/data/realObservations.json`,
-`src/data/growthObservations.json`, and `src/data/survivalObservations.json`.
+All records are real observations. `src/data/observations.js` assembles the
+dashboard dataset from `public/data/realObservations.json`,
+`public/data/growthObservations.json`, and `public/data/survivalObservations.json`,
+and holds the null-safe aggregation functions; `src/data/resources.js` fetches
+and caches the bundles; `src/data/siteMetadata.js` holds site coordinates,
+colors, and controlled vocabularies.
 
 Current committed data summary:
 
 | Dataset | File | Description |
 |---------|------|-------------|
-| Field observations | `src/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Thorndyke Bay 10K-Seed survival anchors |
-| Growth observations | `src/data/growthObservations.json` | 29,836 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
-| Survival observations | `src/data/survivalObservations.json` | 738 per-bag percent-survival records from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay PolyIC, and Westcott survival CSV outputs (Sequim Bay PolyIC and Westcott per assessment date; Thorndyke Bay and Palix River/Willapa Bay total survival) |
-| Archival temperature | `src/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
-| Near-live environment | `src/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
-| Site metadata | `src/data/mockShellfishData.js` | Site coordinates, regions, descriptions, colors, filter helpers, and chart aggregation helpers |
+| Field observations | `public/data/realObservations.json` | 74 site x treatment x assessment-date records generated from RobertsLab outplant data and Thorndyke Bay 10K-Seed survival anchors |
+| Growth observations | `public/data/growthObservations.json` | 29,836 individual oyster predicted-volume records refreshed from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay thermal, Sequim Bay PolyIC, and Westcott growth CSV outputs |
+| Survival observations | `public/data/survivalObservations.json` | 738 per-bag percent-survival records from Thorndyke Bay, Palix River/Willapa Bay, Sequim Bay PolyIC, and Westcott survival CSV outputs (Sequim Bay PolyIC and Westcott per assessment date; Thorndyke Bay and Palix River/Willapa Bay total survival) |
+| Archival temperature | `public/data/archivalTemperatureData.json` | Daily water-temperature summaries aggregated from approximately 15-minute HOBO logger records |
+| Near-live environment | `public/data/liveTemperature.json` | Recent matched observations and source metadata for temperature, tide, wind, pressure, waves, streamflow where available, and chlorophyll source matches |
+| Site metadata | `src/data/siteMetadata.js` | Site coordinates, regions, descriptions, colors, and controlled vocabularies |
 
-The dashboard-facing observation array is assembled in `src/data/mockShellfishData.js`
+### Bundle format
+
+The three observation bundles use a compact positional format so the growth
+dataset ships at about 1.5 MB instead of 20 MB. Each bundle carries `columns`
+(the field at each row position), `lookups` (columns stored as an index into a
+value list), `constants` (fields identical on every record), and `rows`.
+`year`, `month`, `quarter`, and `id` are derived on load. The encoder is
+`compact_bundle` in `scripts/shield_data.py` and the decoder is
+`src/data/bundleFormat.js`; `npm test` validates every committed bundle against
+the schema and vocabularies.
+
+The dashboard-facing observation array is assembled in `src/data/observations.js`
 from field, growth, and survival observations. Field rows supply monthly
 logger-temperature (and legacy shell-length growth) values; per-bag survival
 rows carry percent survival; individual growth-volume rows carry predicted
@@ -145,16 +172,18 @@ when reusing the dashboard or derived data products.
 | OpenStreetMap contributors | Base map tiles and map attribution | `src/components/SiteMap.jsx`, `src/components/LiveTemperaturePanel.jsx` |
 
 Direct public source URLs are stored in the generated JSON metadata where
-available, especially `src/data/archivalTemperatureData.json` and
-`src/data/liveTemperature.json`.
+available, especially `public/data/archivalTemperatureData.json` and
+`public/data/liveTemperature.json`.
 
 ## Features
 
 - Interactive filters for site, treatment, metric, and study year
 - Summary statistic cards for filtered records
-- Time-series chart for growth volume, temperature, or survival
+- Time-series chart for growth volume, temperature, or survival, one line per
+  site so sites sampled on different dates are never pooled
 - Archival water-temperature chart from HOBO logger data
-- Treatment comparison and site comparison charts
+- Treatment comparison and site comparison charts, using the latest assessment
+  per site and treatment for both growth and survival
 - Sortable, searchable, paginated data table
 - Field report export for the current filter state
 - Geographic site map with interactive markers
@@ -168,8 +197,9 @@ available, especially `src/data/archivalTemperatureData.json` and
 
 - [Node.js](https://nodejs.org/) 18 or later
 - npm, included with Node.js
-- Python 3. The growth refresh script uses only the standard library; `pandas`
-  is needed only if regenerating `realObservations.json`.
+- Python 3.10 or later. The growth, survival, and live-environment scripts use
+  only the standard library. Regenerating `realObservations.json` needs the
+  packages in `requirements.txt` (`pip install -r requirements.txt`).
 
 ## Install Dependencies
 
@@ -203,6 +233,18 @@ npm run build
 
 Output is written to `dist/`.
 
+Run the unit and bundle-validation tests:
+
+```bash
+npm test
+```
+
+Regenerate every static data bundle in dependency order:
+
+```bash
+npm run build:data
+```
+
 Refresh the near-live environmental snapshot locally:
 
 ```bash
@@ -215,10 +257,12 @@ Regenerate the archival temperature bundle:
 npm run build:temperature
 ```
 
-Regenerate real observations manually:
+Regenerate field observations manually (reads the public GitHub repository by
+default; set `PGC_SOURCE` to a local `project-gigas-conditioning` checkout to
+build offline):
 
 ```bash
-python3 scripts/build_real_observations.py
+npm run build:real
 ```
 
 Regenerate growth observations manually:
@@ -298,9 +342,18 @@ The React Router basename is derived automatically from this setting.
 shield-dashboard/
 ├── README.md
 ├── package.json
+├── requirements.txt
 ├── index.html
 ├── vite.config.js
+├── public/
+│   └── data/
+│       ├── archivalTemperatureData.json
+│       ├── growthObservations.json
+│       ├── liveTemperature.json
+│       ├── realObservations.json
+│       └── survivalObservations.json
 ├── scripts/
+│   ├── shield_data.py
 │   ├── build_growth_observations.py
 │   ├── build_survival_observations.py
 │   ├── build_real_observations.py
@@ -311,12 +364,11 @@ shield-dashboard/
     ├── App.jsx
     ├── styles.css
     ├── data/
-    │   ├── archivalTemperatureData.json
-    │   ├── growthObservations.json
-    │   ├── liveTemperature.json
-    │   ├── mockShellfishData.js
-    │   ├── realObservations.json
-    │   └── survivalObservations.json
+    │   ├── bundleFormat.js
+    │   ├── observations.js
+    │   ├── resources.js
+    │   ├── siteMetadata.js
+    │   └── __tests__/
     ├── pages/
     │   ├── DashboardPage.jsx
     │   ├── LiveDataPage.jsx
@@ -324,6 +376,7 @@ shield-dashboard/
     │   └── ResearchPage.jsx
     └── components/
         ├── ArchivalTemperatureChart.jsx
+        ├── DataStatus.jsx
         ├── DataTable.jsx
         ├── FieldReportExport.jsx
         ├── Filters.jsx
@@ -343,11 +396,13 @@ shield-dashboard/
 | `npm run dev` | Start the Vite development server |
 | `npm run build` | Build the static app and create GitHub Pages SPA fallback files |
 | `npm run preview` | Preview the production build locally |
-| `npm run deploy` | Alias for the production build |
-| `npm run build:growth` | Refresh `src/data/growthObservations.json` from RobertsLab growth CSV outputs |
-| `npm run build:survival` | Refresh `src/data/survivalObservations.json` from RobertsLab survival CSV outputs |
-| `npm run build:live-environment` | Refresh `src/data/liveTemperature.json` from public observing feeds |
-| `npm run build:temperature` | Regenerate `src/data/archivalTemperatureData.json` from source temperature CSVs |
+| `npm test` | Run the Vitest unit tests and validate the committed data bundles |
+| `npm run build:data` | Regenerate all static bundles in dependency order (temperature, field, growth, survival) |
+| `npm run build:real` | Refresh `public/data/realObservations.json` from RobertsLab field observation files |
+| `npm run build:growth` | Refresh `public/data/growthObservations.json` from RobertsLab growth CSV outputs |
+| `npm run build:survival` | Refresh `public/data/survivalObservations.json` from RobertsLab survival CSV outputs |
+| `npm run build:live-environment` | Refresh `public/data/liveTemperature.json` from public observing feeds |
+| `npm run build:temperature` | Regenerate `public/data/archivalTemperatureData.json` from source temperature CSVs |
 
 ## License
 

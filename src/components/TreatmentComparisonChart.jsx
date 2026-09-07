@@ -10,24 +10,29 @@ import {
   ResponsiveContainer,
   ErrorBar,
 } from 'recharts';
-import { TREATMENTS } from '../data/mockShellfishData';
+import { TREATMENT_COLORS, FALLBACK_COLOR } from '../data/siteMetadata';
 
-const TREATMENT_COLORS = {
-  Control: '#64748b',
-  'Heat primed': '#dc2626',
-  'Freshwater primed': '#0891b2',
-  'Immune primed': '#7c3aed',
-  'Combined stress primed': '#059669',
+const VIEW_CONFIG = {
+  survival: {
+    label: 'Final Survival',
+    yLabel: 'Final survival (%)',
+    caption: 'Survival at the latest assessment by priming treatment within each site',
+  },
+  growth: {
+    label: 'Final Growth Volume',
+    yLabel: 'Final predicted volume',
+    caption:
+      'Mean predicted oyster volume at the latest assessment by priming treatment within each site',
+  },
 };
 
-export default function TreatmentComparisonChart({ survivalData, growthData }) {
+export default function TreatmentComparisonChart({ survivalData, growthData, treatments }) {
   const [view, setView] = useState('survival');
   const [showErrorBars, setShowErrorBars] = useState(false);
   const data = view === 'survival' ? survivalData : growthData;
-  const yLabel =
-    view === 'survival' ? 'Final survival (%)' : 'Mean predicted volume';
+  const config = VIEW_CONFIG[view];
   const canShowErrorBars = data?.some((row) =>
-    TREATMENTS.some((treatment) => row[`${treatment}Error`] != null)
+    treatments.some((treatment) => row[`${treatment}Error`] != null)
   );
 
   if (!data || data.length === 0) {
@@ -45,20 +50,17 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
         <h2 className="section-title">Treatment Comparison by Site</h2>
         <div className="chart-controls">
           <div className="toggle-group" role="group" aria-label="Comparison metric">
-            <button
-              type="button"
-              className={view === 'survival' ? 'toggle active' : 'toggle'}
-              onClick={() => setView('survival')}
-            >
-              Final Survival
-            </button>
-            <button
-              type="button"
-              className={view === 'growth' ? 'toggle active' : 'toggle'}
-              onClick={() => setView('growth')}
-            >
-              Growth Volume
-            </button>
+            {Object.keys(VIEW_CONFIG).map((key) => (
+              <button
+                key={key}
+                type="button"
+                className={view === key ? 'toggle active' : 'toggle'}
+                aria-pressed={view === key}
+                onClick={() => setView(key)}
+              >
+                {VIEW_CONFIG[key].label}
+              </button>
+            ))}
           </div>
           {canShowErrorBars && (
             <label className="checkbox-control no-print">
@@ -72,11 +74,7 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
           )}
         </div>
       </div>
-      <p className="chart-caption">
-        {view === 'survival'
-          ? 'End-of-period survival by priming treatment within each site'
-          : 'Mean predicted oyster volume by priming treatment within each site'}
-      </p>
+      <p className="chart-caption">{config.caption}</p>
       <div className="chart-container">
         <ResponsiveContainer width="100%" height={380}>
           <BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
@@ -88,7 +86,7 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
             <YAxis
               tick={{ fontSize: 12, fill: '#475569' }}
               label={{
-                value: yLabel,
+                value: config.yLabel,
                 angle: -90,
                 position: 'insideLeft',
                 style: { fill: '#64748b', fontSize: 12 },
@@ -102,25 +100,22 @@ export default function TreatmentComparisonChart({ survivalData, growthData }) {
               }}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />
-            {TREATMENTS.map((t) => (
-              <Bar
-                key={t}
-                dataKey={t}
-                name={t}
-                fill={TREATMENT_COLORS[t]}
-                radius={[3, 3, 0, 0]}
-              >
-                {showErrorBars && canShowErrorBars && (
-                  <ErrorBar
-                    dataKey={`${t}Error`}
-                    direction="y"
-                    width={4}
-                    stroke={TREATMENT_COLORS[t]}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </Bar>
-            ))}
+            {treatments.map((t) => {
+              const color = TREATMENT_COLORS[t] ?? FALLBACK_COLOR;
+              return (
+                <Bar key={t} dataKey={t} name={t} fill={color} radius={[3, 3, 0, 0]}>
+                  {showErrorBars && canShowErrorBars && (
+                    <ErrorBar
+                      dataKey={`${t}Error`}
+                      direction="y"
+                      width={4}
+                      stroke={color}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </Bar>
+              );
+            })}
           </BarChart>
         </ResponsiveContainer>
       </div>
