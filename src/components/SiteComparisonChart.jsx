@@ -10,22 +10,24 @@ import {
   Cell,
   ErrorBar,
 } from 'recharts';
-
-const SITE_COLORS = {
-  'Thorndyke Bay': '#2563eb',
-  'Sequim Bay': '#0891b2',
-  'Palix River/Willapa Bay': '#d97706',
-  Westcott: '#6366f1',
-};
+import { siteColor } from '../data/siteMetadata';
 
 const VIEW_CONFIG = {
   growth: {
-    label: 'Growth Volume',
+    label: 'Final Growth Volume',
     unit: 'predicted volume',
-    caption: 'Average predicted oyster volume by site',
+    caption: 'Mean predicted oyster volume at the latest assessment by site',
   },
-  survival: { label: 'Final Survival', unit: '%', caption: 'Mean end-of-period survival (%) by site' },
-  temperature: { label: 'Mean Temperature', unit: '°C', caption: 'Average water temperature (°C) by site' },
+  survival: {
+    label: 'Final Survival',
+    unit: '%',
+    caption: 'Mean survival (%) at the latest assessment by site',
+  },
+  temperature: {
+    label: 'Mean Temperature',
+    unit: '°C',
+    caption: 'Average water temperature (°C) by site across the filtered period',
+  },
 };
 
 export default function SiteComparisonChart({ growthData, survivalData, tempData }) {
@@ -62,6 +64,7 @@ export default function SiteComparisonChart({ growthData, survivalData, tempData
                 key={key}
                 type="button"
                 className={view === key ? 'toggle active' : 'toggle'}
+                aria-pressed={view === key}
                 onClick={() => setView(key)}
               >
                 {VIEW_CONFIG[key].label}
@@ -117,7 +120,7 @@ export default function SiteComparisonChart({ growthData, survivalData, tempData
                 />
               )}
               {data.map((entry) => (
-                <Cell key={entry.site} fill={SITE_COLORS[entry.site] ?? '#94a3b8'} />
+                <Cell key={entry.site} fill={siteColor(entry.site)} />
               ))}
             </Bar>
           </BarChart>

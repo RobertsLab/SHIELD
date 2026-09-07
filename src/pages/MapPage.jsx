@@ -1,17 +1,18 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import SiteMap from '../components/SiteMap';
-import {
-  mockShellfishData,
-  getSiteGeographicSummaries,
-} from '../data/mockShellfishData';
+import DataStatus from '../components/DataStatus';
+import { useObservations } from '../data/resources';
+import { getSiteGeographicSummaries } from '../data/observations';
 
 export default function MapPage() {
   const [selectedSite, setSelectedSite] = useState(null);
+  const observations = useObservations();
+  const dataset = observations.data;
 
   const siteSummaries = useMemo(
-    () => getSiteGeographicSummaries(mockShellfishData),
-    []
+    () => (dataset ? getSiteGeographicSummaries(dataset.records, dataset.sites) : []),
+    [dataset]
   );
 
   const activeSite = siteSummaries.find((s) => s.site === selectedSite);
@@ -27,99 +28,109 @@ export default function MapPage() {
         </p>
       </section>
 
-      <div className="map-layout">
-        <section className="card map-panel">
-          <SiteMap
-            sites={siteSummaries}
-            selectedSite={selectedSite}
-            onSelectSite={setSelectedSite}
-          />
-        </section>
+      <DataStatus
+        status={observations.status}
+        error={observations.error}
+        retry={observations.retry}
+        label="site summaries"
+        className="card"
+      />
 
-        <aside className="map-sidebar">
-          <div className="card map-detail-card">
-            <h2 className="section-title">
-              {activeSite ? activeSite.site : 'Select a Site'}
-            </h2>
-            {activeSite ? (
-              <>
-                <p className="map-detail-region">{activeSite.region}</p>
-                <p className="map-detail-desc">{activeSite.description}</p>
-                <dl className="map-detail-stats">
-                  <div>
-                    <dt>Coordinates</dt>
-                    <dd>
-                      {activeSite.lat.toFixed(3)}°N,{' '}
-                      {Math.abs(activeSite.lng).toFixed(3)}°W
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Mean growth volume</dt>
-                    <dd>{activeSite.meanGrowth?.toLocaleString() ?? '—'}</dd>
-                  </div>
-                  <div>
-                    <dt>Mean temperature</dt>
-                    <dd>
-                      {activeSite.meanTemp != null ? `${activeSite.meanTemp} °C` : '—'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Final survival</dt>
-                    <dd>
-                      {activeSite.finalSurvival != null
-                        ? `${activeSite.finalSurvival}%`
-                        : '—'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Records</dt>
-                    <dd>{activeSite.recordCount.toLocaleString()}</dd>
-                  </div>
-                </dl>
-                <Link
-                  to={`/?site=${encodeURIComponent(activeSite.site)}`}
-                  className="map-detail-link"
+      {observations.status === 'ready' ? (
+        <div className="map-layout">
+          <section className="card map-panel">
+            <SiteMap
+              sites={siteSummaries}
+              selectedSite={selectedSite}
+              onSelectSite={setSelectedSite}
+            />
+          </section>
+
+          <aside className="map-sidebar">
+            <div className="card map-detail-card">
+              <h2 className="section-title">
+                {activeSite ? activeSite.site : 'Select a Site'}
+              </h2>
+              {activeSite ? (
+                <>
+                  <p className="map-detail-region">{activeSite.region}</p>
+                  <p className="map-detail-desc">{activeSite.description}</p>
+                  <dl className="map-detail-stats">
+                    <div>
+                      <dt>Coordinates</dt>
+                      <dd>
+                        {activeSite.lat.toFixed(3)}°N,{' '}
+                        {Math.abs(activeSite.lng).toFixed(3)}°W
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Final growth volume</dt>
+                      <dd>{activeSite.finalGrowth?.toLocaleString() ?? '—'}</dd>
+                    </div>
+                    <div>
+                      <dt>Mean temperature</dt>
+                      <dd>
+                        {activeSite.meanTemp != null ? `${activeSite.meanTemp} °C` : '—'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Final survival</dt>
+                      <dd>
+                        {activeSite.finalSurvival != null
+                          ? `${activeSite.finalSurvival}%`
+                          : '—'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Records</dt>
+                      <dd>{activeSite.recordCount.toLocaleString()}</dd>
+                    </div>
+                  </dl>
+                  <Link
+                    to={`/?site=${encodeURIComponent(activeSite.site)}`}
+                    className="map-detail-link"
+                  >
+                    Open dashboard for {activeSite.site} →
+                  </Link>
+                </>
+              ) : (
+                <p className="map-detail-placeholder">
+                  Select a site on the map or from the list below to view
+                  geographic and monitoring summary data.
+                </p>
+              )}
+            </div>
+
+            <div className="site-card-list">
+              {siteSummaries.map((site) => (
+                <button
+                  key={site.site}
+                  type="button"
+                  className={
+                    selectedSite === site.site
+                      ? 'site-list-card card active'
+                      : 'site-list-card card'
+                  }
+                  onClick={() => setSelectedSite(site.site)}
                 >
-                  Open dashboard for {activeSite.site} →
-                </Link>
-              </>
-            ) : (
-              <p className="map-detail-placeholder">
-                Select a site on the map or from the list below to view
-                geographic and monitoring summary data.
-              </p>
-            )}
-          </div>
-
-          <div className="site-card-list">
-            {siteSummaries.map((site) => (
-              <button
-                key={site.site}
-                type="button"
-                className={
-                  selectedSite === site.site
-                    ? 'site-list-card card active'
-                    : 'site-list-card card'
-                }
-                onClick={() => setSelectedSite(site.site)}
-              >
-                <span
-                  className="site-list-dot"
-                  style={{ backgroundColor: site.color }}
-                  aria-hidden="true"
-                />
-                <div className="site-list-info">
-                  <span className="site-list-name">{site.site}</span>
-                  <span className="site-list-region">{site.region}</span>
-                </div>
-                <span className="site-list-survival">
-                  {site.finalSurvival != null ? `${site.finalSurvival}% surv.` : '—'}
-                </span>
-              </button>
-            ))}
-          </div>
-        </aside>
-      </div>
+                  <span
+                    className="site-list-dot"
+                    style={{ backgroundColor: site.color }}
+                    aria-hidden="true"
+                  />
+                  <div className="site-list-info">
+                    <span className="site-list-name">{site.site}</span>
+                    <span className="site-list-region">{site.region}</span>
+                  </div>
+                  <span className="site-list-survival">
+                    {site.finalSurvival != null ? `${site.finalSurvival}% surv.` : '—'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </aside>
+        </div>
+      ) : null}
     </main>
   );
 }

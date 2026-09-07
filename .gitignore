@@ -6,3 +6,4 @@ docs/
 *.local
 .env
 .env.*
+__pycache__/

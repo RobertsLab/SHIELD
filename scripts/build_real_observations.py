@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-Build real observation records for the Shellfish Farm Outplant Dashboard from
-the RobertsLab `project-gigas-conditioning` repo (+ Thorndyke Bay 10K-Seed survival
+Build SHIELD field observation records from the RobertsLab
+`project-gigas-conditioning` repository (plus Thorndyke Bay 10K-Seed survival
 anchors quoted in the lab notebooks).
 
-Each output record is one site x treatment x assessment-date measurement with
-the dashboard schema. A metric is populated ONLY where it was actually measured;
-otherwise it is null (the dashboard aggregations are null-safe). Temperature is
-the real monthly mean from in-situ HOBO loggers (reused from
-src/data/archivalTemperatureData.json).
+Each output record is one site x treatment x assessment-date measurement. A
+metric is populated ONLY where it was actually measured; otherwise it is null
+(the dashboard aggregations are null-safe). Temperature is the real monthly
+mean from in-situ HOBO loggers, reused from public/data/archivalTemperatureData.json,
+so run scripts/buildArchivalTemperature.mjs first (or `npm run build:data`).
 
-Hybrid treatment mapping (per user choice): real groups are normalized onto the
-dashboard's treatment axis, and the original experiment is preserved in `effort`.
+Inputs are read from the public GitHub repository by default. Set the
+`PGC_SOURCE` environment variable to a local checkout path to build offline:
+
+    PGC_SOURCE=~/GitHub/project-gigas-conditioning python3 scripts/build_real_observations.py
+
+Hybrid treatment mapping: real groups are normalized onto the dashboard's
+treatment axis, and the original experiment is preserved in `effort`.
 
   Control (any)                  -> Control
   Temperature / thermal treated  -> Heat primed
@@ -19,25 +24,85 @@ dashboard's treatment axis, and the original experiment is preserved in `effort`
   polyIC / immune                -> Immune primed        (Thorndyke Bay 10K-Seed only)
   FW + temperature               -> Combined stress primed (Thorndyke Bay 10K-Seed only)
 
-Run:  python3 scripts/build_real_observations.py
+Requires pandas and openpyxl (see requirements.txt).
+
+Output: public/data/realObservations.json in the compact bundle format
+described in shield_data.py.
 """
+import io
 import json
 import os
+import sys
 from collections import defaultdict
 from datetime import datetime
 
 import pandas as pd
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.abspath(os.path.join(HERE, ".."))
-PGC = "/Users/sr320/Documents/GitHub/project-gigas-conditioning"
-OUT = os.path.join(REPO, "src", "data", "realObservations.json")
-ARCHIVAL = os.path.join(REPO, "src", "data", "archivalTemperatureData.json")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from shield_data import (  # noqa: E402
+    compact_bundle,
+    data_path,
+    fetch_bytes,
+    report,
+    utc_today,
+    write_bundle,
+)
+
+DEFAULT_SOURCE = "https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main"
+SOURCE = os.environ.get("PGC_SOURCE", DEFAULT_SOURCE).rstrip("/")
+OUT = data_path("realObservations.json")
+ARCHIVAL = data_path("archivalTemperatureData.json")
 
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+COLUMNS = [
+    "date", "site", "treatment", "effort", "growth_mm", "temperature_C",
+    "survival_percent", "survival_source", "growth_source",
+]
+LOOKUP_COLUMNS = ["site", "treatment", "effort", "survival_source", "growth_source"]
+CONSTANTS = {"temperature_source": "logger-monthly-mean"}
 
+
+# ---------------------------------------------------------------------------
+# Input access: remote by default, local checkout via PGC_SOURCE
+# ---------------------------------------------------------------------------
+def source_is_local():
+    return os.path.isdir(os.path.expanduser(SOURCE))
+
+
+def source_exists(relpath):
+    if source_is_local():
+        return os.path.exists(os.path.join(os.path.expanduser(SOURCE), relpath))
+    try:
+        fetch_bytes(f"{SOURCE}/{relpath}")
+        return True
+    except RuntimeError:
+        return False
+
+
+def source_handle(relpath):
+    """Binary file-like object for a repository-relative path."""
+    if source_is_local():
+        return open(os.path.join(os.path.expanduser(SOURCE), relpath), "rb")
+    print(f"  fetching {relpath}", file=sys.stderr)
+    return io.BytesIO(fetch_bytes(f"{SOURCE}/{relpath}"))
+
+
+def read_csv(relpath):
+    with source_handle(relpath) as handle:
+        return pd.read_csv(handle)
+
+
+def read_excel(relpath):
+    with source_handle(relpath) as handle:
+        return pd.read_excel(handle)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 def parse_ymd(v):
     """Accept '20240624', '2024-06-24', or a Timestamp -> date string YYYY-MM-DD."""
     if isinstance(v, (pd.Timestamp, datetime)):
@@ -46,16 +111,6 @@ def parse_ymd(v):
     if "-" in s:
         return s[:10]
     return f"{s[0:4]}-{s[4:6]}-{s[6:8]}"
-
-
-def date_fields(dstr):
-    dt = datetime.strptime(dstr, "%Y-%m-%d")
-    return {
-        "date": dstr,
-        "year": str(dt.year),
-        "month": MONTHS[dt.month - 1],
-        "quarter": f"Q{(dt.month - 1) // 3 + 1}",
-    }
 
 
 def round1(x):
@@ -69,22 +124,18 @@ def round1(x):
     return round(float(x) * 10) / 10
 
 
-# ---------------------------------------------------------------------------
-# Real monthly mean temperature per site (from already-real logger archival)
-# ---------------------------------------------------------------------------
+# Real monthly mean temperature per site (from the logger archival bundle)
 def monthly_temps():
-    arch = json.load(open(ARCHIVAL))
-    # site -> "YYYY-MM" -> [values]
+    with open(ARCHIVAL, encoding="utf-8") as handle:
+        arch = json.load(handle)
     acc = defaultdict(lambda: defaultdict(list))
     for row in arch["series"]:
         ym = row["date"][:7]
         for site in arch["sites"]:
             if site in row and row[site] is not None:
                 acc[site][ym].append(row[site])
-    out = {}
-    for site, months in acc.items():
-        out[site] = {ym: sum(v) / len(v) for ym, v in months.items()}
-    return out
+    return {site: {ym: sum(v) / len(v) for ym, v in months.items()}
+            for site, months in acc.items()}
 
 
 MONTHLY_TEMP = monthly_temps()
@@ -110,10 +161,8 @@ notes = {}
 
 def emit(site, treatment, effort, dstr, survival=None, growth=None,
          survival_src="estimated", growth_src="estimated"):
-    f = date_fields(dstr)
     records.append({
-        "id": f"{site[:2].upper()}-{treatment.split()[0][:4].upper()}-{dstr}",
-        **f,
+        "date": dstr,
         "site": site,
         "treatment": treatment,
         "effort": effort,
@@ -122,17 +171,16 @@ def emit(site, treatment, effort, dstr, survival=None, growth=None,
         "survival_percent": round1(survival),
         "survival_source": survival_src if survival is not None else "none",
         "growth_source": growth_src if growth is not None else "none",
-        "temperature_source": "logger-monthly-mean",
     })
 
 
 # ---------------------------------------------------------------------------
-# PALIX RIVER/WILLAPA BAY  (Effort E: weekly temperature / weekly fresh water, control/treated)
+# PALIX RIVER/WILLAPA BAY  (Effort E: weekly temperature / weekly fresh water)
 # ---------------------------------------------------------------------------
 def palix_river_willapa_bay():
-    surv = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/survival_GoosePoint.csv"))
-    grow = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/growth_GoosePoint.csv"))
-    bags = pd.read_csv(os.path.join(PGC, "data/outplanting/GoosePoint/bag_list_GoosePoint.csv"))
+    surv = read_csv("data/outplanting/GoosePoint/survival_GoosePoint.csv")
+    grow = read_csv("data/outplanting/GoosePoint/growth_GoosePoint.csv")
+    bags = read_csv("data/outplanting/GoosePoint/bag_list_GoosePoint.csv")
 
     def norm(group):
         g = str(group).lower()
@@ -177,16 +225,18 @@ def palix_river_willapa_bay():
         emit("Palix River/Willapa Bay", trt, v.get("eff", "Effort E"), dstr,
              survival=v.get("surv"), growth=v.get("grow"),
              survival_src="measured", growth_src="measured")
-    notes["Palix River/Willapa Bay"] = "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length."
+    notes["Palix River/Willapa Bay"] = (
+        "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. "
+        "Real survival (live/total) and image-derived shell length.")
 
 
 # ---------------------------------------------------------------------------
 # SEQUIM  (Effort A: daily thermal hardening, control/treated)
 # ---------------------------------------------------------------------------
 def sequim():
-    surv = pd.read_csv(os.path.join(PGC, "data/outplanting/Sequim/survival_Sequim.csv"))
-    size = pd.read_excel(os.path.join(PGC, "data/outplanting/Sequim/size_Sequim.xlsx"))
-    bags = pd.read_csv(os.path.join(PGC, "data/outplanting/Sequim/bag_list_Sequim.csv"))
+    surv = read_csv("data/outplanting/Sequim/survival_Sequim.csv")
+    size = read_excel("data/outplanting/Sequim/size_Sequim.xlsx")
+    bags = read_csv("data/outplanting/Sequim/bag_list_Sequim.csv")
 
     def norm(t):
         return ("Heat primed" if str(t).strip().lower() == "treated" else "Control",
@@ -200,7 +250,7 @@ def sequim():
 
     # Per bag: baseline N0 = first alive + dead that visit; survival = (N0 - cum dead)/N0
     rows = []
-    for bag, g in surv.sort_values("dstr").groupby("bag"):
+    for _, g in surv.sort_values("dstr").groupby("bag"):
         g = g.copy()
         first = g.iloc[0]
         n0 = (first["alive"] if pd.notna(first["alive"]) else 0) + first["dead"]
@@ -234,7 +284,9 @@ def sequim():
         emit("Sequim Bay", trt, v.get("eff", "Effort A"), dstr,
              survival=v.get("surv"), growth=v.get("grow"),
              survival_src="measured", growth_src="measured")
-    notes["Sequim Bay"] = "Effort A (2 weeks daily 25°C thermal hardening), control/treated. Real survival from cumulative mortality; image-derived shell length."
+    notes["Sequim Bay"] = (
+        "Effort A (2 weeks daily 25°C thermal hardening), control/treated. "
+        "Real survival from cumulative mortality; image-derived shell length.")
 
 
 # ---------------------------------------------------------------------------
@@ -246,11 +298,11 @@ def westcott():
         ("B_survival_12022025.xlsx", "Effort B — daily thermal"),
         ("D_survival_12022025.xlsx", "Effort D — weekly thermal"),
     ]:
-        p = os.path.join(PGC, "data/survival/Westcott", eff_file)
-        if not os.path.exists(p):
+        relpath = f"data/survival/Westcott/{eff_file}"
+        if not source_exists(relpath):
+            print(f"  ! missing {relpath}; skipping", file=sys.stderr)
             continue
-        df = pd.read_excel(p)
-        df = df.copy()
+        df = read_excel(relpath).copy()
         df["eff_label"] = eff_label
         frames.append(df)
     if not frames:
@@ -264,7 +316,7 @@ def westcott():
 
     # Per bag baseline = first alive_num; survival = alive_num / N0 * 100
     rows = []
-    for (bag, eff), g in surv.sort_values("dstr").groupby(["bag_num", "eff_label"]):
+    for (_, eff), g in surv.sort_values("dstr").groupby(["bag_num", "eff_label"]):
         g = g.dropna(subset=["alive_num"])
         if g.empty:
             continue
@@ -272,7 +324,7 @@ def westcott():
         if not n0:
             continue
         for _, r in g.iterrows():
-            # cap at 100% — later counts can exceed the first due to recount noise
+            # cap at 100% since later counts can exceed the first due to recount noise
             rows.append({"trt": r["trt"], "eff": eff, "dstr": r["dstr"],
                          "surv": min(100.0, r["alive_num"] / n0 * 100)})
     sdf = pd.DataFrame(rows).groupby(["trt", "dstr"]).agg(
@@ -282,11 +334,13 @@ def westcott():
     for _, r in sdf.sort_values(["dstr", "trt"]).iterrows():
         emit("Westcott", r["trt"], r["eff"], r["dstr"],
              survival=r["surv"], survival_src="measured")
-    notes["Westcott"] = "Efforts B (daily) & D (weekly) thermal hardening, control/treated. Real survival (alive/initial per bag). Image growth not yet calibrated to mm."
+    notes["Westcott"] = (
+        "Efforts B (daily) & D (weekly) thermal hardening, control/treated. "
+        "Real survival (alive/initial per bag). Image growth not yet calibrated to mm.")
 
 
 # ---------------------------------------------------------------------------
-# THORNDYKE BAY  (10K-Seed, 5 treatments) — survival anchors quoted in lab notebooks
+# THORNDYKE BAY  (10K-Seed, 5 treatments): survival anchors quoted in lab notebooks
 # (raw data lives in RobertsLab/10K-seed-Cgigas, not in project-gigas-conditioning)
 # ---------------------------------------------------------------------------
 def thorndyke_bay():
@@ -301,31 +355,25 @@ def thorndyke_bay():
     for trt, pct in anchor.items():
         emit("Thorndyke Bay", trt, "10K-Seed (hardening)", "2025-08-20",
              survival=pct, survival_src="measured")
-    notes["Thorndyke Bay"] = "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
+    notes["Thorndyke Bay"] = (
+        "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured "
+        "2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically.")
 
 
-palix_river_willapa_bay()
-sequim()
-westcott()
-thorndyke_bay()
+def main():
+    print(f"Reading project-gigas-conditioning inputs from {SOURCE}", file=sys.stderr)
+    palix_river_willapa_bay()
+    sequim()
+    westcott()
+    thorndyke_bay()
 
-records.sort(key=lambda r: (r["site"], r["treatment"], r["date"]))
-for i, r in enumerate(records):
-    r["id"] = f"{r['id']}-{i}"  # ensure uniqueness
+    records.sort(key=lambda r: (r["site"], r["treatment"], r["date"]))
 
-sites = sorted({r["site"] for r in records})
-treatments_present = {r["treatment"] for r in records}
-TREATMENT_ORDER = ["Control", "Heat primed", "Freshwater primed",
-                   "Immune primed", "Combined stress primed"]
-treatments = [t for t in TREATMENT_ORDER if t in treatments_present]
-years = sorted({r["year"] for r in records})
-
-bundle = {
-    "meta": {
-        "generatedAt": datetime.utcnow().strftime("%Y-%m-%d"),
+    meta = {
+        "generatedAt": utc_today(),
         "source": "RobertsLab/project-gigas-conditioning (+ 10K-Seed survival anchors)",
+        "inputSource": SOURCE,
         "studyTitle": "Crassostrea gigas stress-hardening outplant program",
-        "recordCount": len(records),
         "siteNotes": notes,
         "treatmentMapping": {
             "Control": "untreated control (any effort)",
@@ -334,21 +382,17 @@ bundle = {
             "Immune primed": "polyIC / immune challenge (Thorndyke Bay 10K-Seed)",
             "Combined stress primed": "fresh water + temperature (Thorndyke Bay 10K-Seed)",
         },
-    },
-    "sites": sites,
-    "treatments": treatments,
-    "years": years,
-    "observations": records,
-}
+    }
+    write_bundle(OUT, compact_bundle(records, COLUMNS, LOOKUP_COLUMNS, CONSTANTS, meta))
+    report(records, OUT, "field observation")
+    sites = sorted({r["site"] for r in records})
+    for s in sites:
+        srv = [r for r in records if r["site"] == s and r["survival_percent"] is not None]
+        grw = [r for r in records if r["site"] == s and r["growth_mm"] is not None]
+        print(f"  {s:24} records={sum(1 for r in records if r['site'] == s):3}  "
+              f"survival_pts={len(srv):3}  growth_pts={len(grw):3}  "
+              f"dates={len({r['date'] for r in records if r['site'] == s})}")
 
-json.dump(bundle, open(OUT, "w"), indent=0)
-print(f"Wrote {len(records)} records to {OUT}")
-print("Sites:", sites)
-print("Treatments:", treatments)
-print("Years:", years)
-for s in sites:
-    srv = [r for r in records if r["site"] == s and r["survival_percent"] is not None]
-    grw = [r for r in records if r["site"] == s and r["growth_mm"] is not None]
-    print(f"  {s:12} records={sum(1 for r in records if r['site']==s):3}  "
-          f"survival_pts={len(srv):3}  growth_pts={len(grw):3}  "
-          f"dates={len(sorted({r['date'] for r in records if r['site']==s}))}")
+
+if __name__ == "__main__":
+    main()

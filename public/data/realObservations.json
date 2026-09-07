@@ -1,0 +1,160 @@
+{
+  "format": "shield-observations/1",
+  "meta": {
+    "generatedAt": "2026-06-20",
+    "source": "RobertsLab/project-gigas-conditioning (+ 10K-Seed survival anchors)",
+    "studyTitle": "Crassostrea gigas stress-hardening outplant program",
+    "siteNotes": {
+      "Palix River/Willapa Bay": "Effort E (2023 POGS), weekly temperature + fresh water hardening; control/treated. Real survival (live/total) and image-derived shell length.",
+      "Sequim Bay": "Effort A (2 weeks daily 25°C thermal hardening), control/treated. Real survival from cumulative mortality; image-derived shell length.",
+      "Westcott": "Efforts B (daily) & D (weekly) thermal hardening, control/treated. Real survival (alive/initial per bag). Image growth not yet calibrated to mm.",
+      "Thorndyke Bay": "10K-Seed hardening (Control / 35C / FW / polyIC / FW+35C). Survival measured 2025-08-20 (n=150/bag); source repo RobertsLab/10K-seed-Cgigas. Growth not published numerically."
+    },
+    "treatmentMapping": {
+      "Control": "untreated control (any effort)",
+      "Heat primed": "temperature / thermal hardening (treated)",
+      "Freshwater primed": "fresh water / low-salinity hardening (treated)",
+      "Immune primed": "polyIC / immune challenge (Thorndyke Bay 10K-Seed)",
+      "Combined stress primed": "fresh water + temperature (Thorndyke Bay 10K-Seed)"
+    },
+    "recordCount": 74
+  },
+  "sites": [
+    "Palix River/Willapa Bay",
+    "Sequim Bay",
+    "Thorndyke Bay",
+    "Westcott"
+  ],
+  "treatments": [
+    "Control",
+    "Heat primed",
+    "Freshwater primed",
+    "Immune primed",
+    "Combined stress primed"
+  ],
+  "years": [
+    "2024",
+    "2025",
+    "2026"
+  ],
+  "columns": [
+    "date",
+    "site",
+    "treatment",
+    "effort",
+    "growth_mm",
+    "temperature_C",
+    "survival_percent",
+    "survival_source",
+    "growth_source"
+  ],
+  "lookups": {
+    "site": [
+      "Thorndyke Bay",
+      "Palix River/Willapa Bay",
+      "Sequim Bay",
+      "Westcott"
+    ],
+    "treatment": [
+      "Combined stress primed",
+      "Control",
+      "Freshwater primed",
+      "Heat primed",
+      "Immune primed"
+    ],
+    "effort": [
+      "10K-Seed (hardening)",
+      "Effort E — weekly fresh water; Effort E — weekly temperature",
+      "Effort E — weekly fresh water",
+      "Effort E — weekly temperature",
+      "Effort A — daily thermal",
+      "Effort B — daily thermal; Effort D — weekly thermal"
+    ],
+    "survival_source": [
+      "measured"
+    ],
+    "growth_source": [
+      "none",
+      "measured"
+    ]
+  },
+  "constants": {
+    "temperature_source": "logger-monthly-mean"
+  },
+  "rows": [
+["2025-08-20",0,0,0,null,15.0,50.1,0,0],
+["2025-08-20",0,1,0,null,15.0,43.1,0,0],
+["2025-08-20",0,2,0,null,15.0,40.1,0,0],
+["2025-08-20",0,3,0,null,15.0,41.6,0,0],
+["2025-08-20",0,4,0,null,15.0,11.7,0,0],
+["2024-06-24",1,1,1,25.9,19.5,100.0,0,1],
+["2024-09-09",1,1,1,42.2,16.3,99.1,0,1],
+["2024-12-11",1,1,1,58.4,8.1,99.8,0,1],
+["2025-05-20",1,1,1,74.1,14.2,99.6,0,1],
+["2025-08-25",1,1,1,87.9,18.2,85.4,0,1],
+["2025-10-08",1,1,1,94.5,12.9,97.3,0,1],
+["2026-05-22",1,1,1,92.5,14.6,null,0,1],
+["2024-06-24",1,2,2,22.9,19.5,100.0,0,1],
+["2024-09-09",1,2,2,43.7,16.3,99.7,0,1],
+["2024-12-11",1,2,2,58.6,8.1,100.0,0,1],
+["2025-05-20",1,2,2,75.1,14.2,99.7,0,1],
+["2025-08-25",1,2,2,96.6,18.2,78.8,0,1],
+["2025-10-08",1,2,2,92.2,12.9,92.8,0,1],
+["2026-05-22",1,2,2,null,14.6,null,0,0],
+["2024-06-24",1,3,3,26.9,19.5,100.0,0,1],
+["2024-09-09",1,3,3,42.1,16.3,98.4,0,1],
+["2024-12-11",1,3,3,60.3,8.1,100.0,0,1],
+["2025-05-20",1,3,3,74.5,14.2,99.7,0,1],
+["2025-08-25",1,3,3,86.0,18.2,79.9,0,1],
+["2025-10-08",1,3,3,97.4,12.9,95.7,0,1],
+["2026-05-22",1,3,3,null,14.6,null,0,0],
+["2025-05-28",2,1,4,74.5,17.2,95.1,0,1],
+["2025-10-06",2,1,4,117.0,10.5,94.2,0,1],
+["2026-05-31",2,1,4,null,16.3,93.8,0,0],
+["2025-05-28",2,3,4,72.8,17.2,99.2,0,1],
+["2025-10-06",2,3,4,98.0,10.5,99.2,0,1],
+["2026-05-31",2,3,4,null,16.3,97.7,0,0],
+["2024-06-20",3,1,5,null,16.1,100.0,0,0],
+["2024-06-25",3,1,5,null,16.1,98.9,0,0],
+["2024-07-08",3,1,5,null,16.4,98.8,0,0],
+["2024-07-17",3,1,5,null,16.4,99.4,0,0],
+["2024-07-24",3,1,5,null,16.4,99.4,0,0],
+["2024-08-01",3,1,5,null,14.5,99.3,0,0],
+["2024-08-07",3,1,5,null,14.5,99.3,0,0],
+["2024-08-15",3,1,5,null,14.5,99.3,0,0],
+["2024-08-20",3,1,5,null,14.5,99.0,0,0],
+["2024-08-29",3,1,5,null,14.5,99.2,0,0],
+["2024-09-03",3,1,5,null,13.4,99.2,0,0],
+["2024-09-12",3,1,5,null,13.4,99.2,0,0],
+["2024-12-17",3,1,5,null,7.8,98.8,0,0],
+["2025-05-13",3,1,5,null,14.1,98.4,0,0],
+["2025-05-29",3,1,5,null,14.1,98.3,0,0],
+["2025-06-25",3,1,5,null,15.6,97.6,0,0],
+["2025-07-11",3,1,5,null,16.6,96.1,0,0],
+["2025-07-24",3,1,5,null,16.6,92.4,0,0],
+["2025-08-08",3,1,5,null,15.9,90.5,0,0],
+["2025-08-20",3,1,5,null,15.9,89.8,0,0],
+["2025-12-02",3,1,5,null,7.8,86.7,0,0],
+["2024-06-20",3,3,5,null,16.1,100.0,0,0],
+["2024-06-25",3,3,5,null,16.1,99.9,0,0],
+["2024-07-08",3,3,5,null,16.4,99.7,0,0],
+["2024-07-17",3,3,5,null,16.4,99.2,0,0],
+["2024-07-24",3,3,5,null,16.4,98.8,0,0],
+["2024-08-01",3,3,5,null,14.5,98.6,0,0],
+["2024-08-07",3,3,5,null,14.5,98.2,0,0],
+["2024-08-15",3,3,5,null,14.5,98.0,0,0],
+["2024-08-20",3,3,5,null,14.5,97.7,0,0],
+["2024-08-29",3,3,5,null,14.5,97.7,0,0],
+["2024-09-03",3,3,5,null,13.4,97.6,0,0],
+["2024-09-12",3,3,5,null,13.4,97.3,0,0],
+["2024-12-17",3,3,5,null,7.8,97.0,0,0],
+["2025-05-13",3,3,5,null,14.1,96.1,0,0],
+["2025-05-29",3,3,5,null,14.1,95.1,0,0],
+["2025-06-25",3,3,5,null,15.6,94.7,0,0],
+["2025-07-11",3,3,5,null,16.6,93.0,0,0],
+["2025-07-24",3,3,5,null,16.6,89.9,0,0],
+["2025-08-08",3,3,5,null,15.9,88.1,0,0],
+["2025-08-20",3,3,5,null,15.9,86.7,0,0],
+["2025-12-02",3,3,5,null,7.8,83.9,0,0]
+  ]
+}

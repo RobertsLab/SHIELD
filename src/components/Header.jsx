@@ -42,19 +42,38 @@ export default function Header() {
             >
               Site Map
             </NavLink>
+            <NavLink
+              to="/live-data"
+              className={({ isActive }) =>
+                isActive ? 'nav-link active' : 'nav-link'
+              }
+            >
+              Live Data
+            </NavLink>
+            <NavLink
+              to="/research"
+              className={({ isActive }) =>
+                isActive ? 'nav-link active' : 'nav-link'
+              }
+            >
+              Research
+            </NavLink>
             <a
               href="https://sr320.github.io/conditioning-atlas/"
               className="nav-link"
+              target="_blank"
+              rel="noreferrer"
             >
               Conditioning Atlas
             </a>
           </nav>
         </div>
         <p className="disclaimer">
-          Real field measurements: survival &amp; image-derived shell growth
-          from RobertsLab outplant assessments (Palix River/Willapa Bay, Sequim, Westcott)
-          plus Thorndyke Bay 10K-Seed survival; temperature is the in-situ HOBO
-          logger monthly mean. Metrics not measured at an assessment are blank.
+          Real field measurements from RobertsLab outplant assessments at
+          Thorndyke Bay, Sequim Bay, Palix River/Willapa Bay, and Westcott:
+          per-bag survival, image-derived oyster growth volume, and in-situ HOBO
+          logger monthly mean water temperature. Metrics not measured at an
+          assessment are blank.
         </p>
       </div>
     </header>

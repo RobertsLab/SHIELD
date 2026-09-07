@@ -130,7 +130,7 @@ async function main() {
     series,
   };
 
-  const outPath = join(__dirname, '..', 'src', 'data', 'archivalTemperatureData.json');
+  const outPath = join(__dirname, '..', 'public', 'data', 'archivalTemperatureData.json');
   writeFileSync(outPath, JSON.stringify(bundle));
   process.stderr.write(
     `Wrote ${series.length} daily rows for ${siteNames.length} sites to ${outPath}\n`
