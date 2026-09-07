@@ -115,7 +115,7 @@ The summary card ranks treatments by mean final survival pooled across all sites
 - **Deploy runs hourly even when nothing changed.** `deploy.yml` triggers on `workflow_run` success, and the refresh job exits successfully whether or not it committed. Emit a job output such as `changed=true` and gate the deploy on it.
 - **No pull request CI.** Nothing builds, lints, or tests a branch before merge. Add a workflow that runs `npm ci && npm run build` on `pull_request`.
 - **No dependency automation.** Add Dependabot or Renovate.
-- **Audit findings.** `react-router-dom` 6.30.4 has two moderate advisories (open redirect via backslash in `Link`, SSR deserialization). `npm audit fix` moves to 6.30.6 with no code change.
+- **Audit findings.** `react-router-dom` 6.30.4 has two moderate advisories (open redirect via backslash in `Link`, SSR deserialization). The fixed range starts at 7.18, so this is a major upgrade rather than a patch. The app only uses `BrowserRouter`, `Routes`, `Route`, `Link`, `NavLink`, and `useSearchParams`, all unchanged in v7, so the upgrade is low risk.
 - **Major versions behind.** React 19, Recharts 3, react-leaflet 5, react-router 7, Vite 8. Not urgent; plan one upgrade pass.
 - `npm run deploy` is an alias for `npm run build` and does not deploy. Remove or rename it.
 
@@ -147,14 +147,14 @@ Generally reasonable: semantic sections, `aria-label`s on control groups, `role=
 
 ## Prioritized roadmap
 
-**Quick wins (an afternoon)**
+**Quick wins (an afternoon)**, addressed on this branch
 
-1. Gate the print appendix behind a `beforeprint` flag. Removes 337,000 DOM nodes from every dashboard load.
-2. Fix survival replacement to key on (site, treatment, date). Restores 22 measured records.
-3. `npm audit fix`.
-4. Add Live Data and Research to the header nav; refresh the disclaimer copy.
-5. Label time series points by date, not month.
-6. Skip the deploy when the snapshot did not change.
+1. Gate the print appendix behind a `beforeprint` flag. Removes 337,000 DOM nodes from every dashboard load. Done: the appendix mounts only while printing and is capped at 1,000 rows with a pointer to the CSV. Dashboard DOM went from 30,665 rows to 16.
+2. Fix survival replacement to key on (site, treatment, date). Restores 22 measured records. Done and verified against the merged dataset: Sequim Bay heat-primed survival and the Palix River 2024 to 2025 trajectory are back.
+3. Resolve the `npm audit` findings. Done by upgrading `react-router-dom` to 7.18.3; the audit is clean and all routes render.
+4. Add Live Data and Research to the header nav; refresh the disclaimer copy. Done.
+5. Label time series points by date, not month. Done; no duplicate labels remain.
+6. Skip the deploy when the snapshot did not change. Done: the refresh workflow now dispatches `deploy.yml` only after committing a changed snapshot, and the `workflow_run` trigger is removed from `deploy.yml`.
 
 **Medium (a few days)**
 

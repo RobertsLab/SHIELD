@@ -61,10 +61,11 @@ The backend-like work happens before deployment:
   observations from nearby NOAA, USGS, and NANOOS-matched sources and writes
   `src/data/liveTemperature.json`.
 - `.github/workflows/live-temperature.yml` refreshes the live environmental
-  snapshot hourly and commits it only when the JSON changes.
+  snapshot hourly, commits it only when the JSON changes, and dispatches the
+  deploy workflow only in that case.
 - `.github/workflows/deploy.yml` builds the static app and deploys the `dist/`
-  artifact to GitHub Pages after pushes to `main`, successful live-environment
-  refreshes, or manual workflow dispatches.
+  artifact to GitHub Pages after pushes to `main` or workflow dispatches
+  (manual, or from a live-environment refresh that changed the snapshot).
 
 This design keeps the public site simple to host on GitHub Pages while still
 allowing scheduled server-side data refreshes for sources that cannot be fetched
@@ -92,10 +93,10 @@ The dashboard-facing observation array is assembled in `src/data/mockShellfishDa
 from field, growth, and survival observations. Field rows supply monthly
 logger-temperature (and legacy shell-length growth) values; per-bag survival
 rows carry percent survival; individual growth-volume rows carry predicted
-volume. Each record leaves metrics it does not measure as `null`, and the
-aggregated survival anchors formerly held in field rows are dropped where a
-per-bag survival dataset replaces them, avoiding double-counting. Field survival
-is retained for sites without a per-bag replacement. Aggregations and exports
+volume. Each record leaves metrics it does not measure as `null`. Aggregated field
+survival is dropped only where a per-bag survival row exists for the same site,
+treatment, and assessment date, avoiding double-counting; field survival is
+retained for every other site, treatment, and date. Aggregations and exports
 are null-safe, so missing metrics show as unavailable rather than as zeroes.
 
 ### Sites

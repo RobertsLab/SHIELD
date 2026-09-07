@@ -87,14 +87,24 @@ export const YEARS = [
 ].sort();
 export const METRICS = ['Growth Volume', 'Temperature', 'Survival'];
 
-const SITES_WITH_REPLICATE_SURVIVAL = new Set(survivalData.sites);
+const survivalKey = (row) => `${row.site}|${row.treatment}|${row.date}`;
+
+/**
+ * Site x treatment x date combinations that have per-bag survival rows in
+ * survivalObservations.json. Field survival is dropped only for these exact
+ * keys. Replacing at the site level dropped measured field survival that had no
+ * per-bag counterpart (Sequim Bay heat-primed, Palix River 2024 to 2025).
+ */
+const REPLICATE_SURVIVAL_KEYS = new Set(
+  survivalData.observations.map(survivalKey)
+);
 
 export const mockShellfishData = [
   // realObservations still supplies in-situ temperature (and legacy growth_mm).
-  // Prefer survivalObservations.json where per-bag published CSVs exist. Retain
-  // field survival for sites that have no replacement dataset.
+  // Prefer survivalObservations.json where per-bag published CSVs exist for the
+  // same site, treatment, and assessment date. Retain field survival otherwise.
   ...realData.observations.map((row) => {
-    const hasReplicateReplacement = SITES_WITH_REPLICATE_SURVIVAL.has(row.site);
+    const hasReplicateReplacement = REPLICATE_SURVIVAL_KEYS.has(survivalKey(row));
     return {
       ...row,
       tag: row.tag ?? null,
@@ -232,7 +242,9 @@ export function getTimeSeriesData(filtered, metric) {
     if (!grouped.has(key)) {
       grouped.set(key, {
         date: key,
-        label: `${row.month} ${row.year}`,
+        // Day-level label: several assessments can fall in one month, and a
+        // month-only label produced repeated x-axis ticks and ambiguous tooltips.
+        label: `${row.month} ${Number(key.slice(8, 10))}, ${row.year}`,
         values: [],
       });
     }

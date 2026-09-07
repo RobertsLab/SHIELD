@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  # Needed to dispatch the Pages deploy workflow when the snapshot changes.
+  actions: write
 
 concurrency:
   group: live-environment
@@ -28,9 +30,11 @@ jobs:
         run: python3 scripts/build_live_temperature.py
 
       - name: Commit snapshot if changed
+        id: commit
         run: |
           if git diff --quiet -- src/data/liveTemperature.json; then
             echo "No change in liveTemperature.json"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "github-actions[bot]"
@@ -38,3 +42,13 @@ jobs:
           git add src/data/liveTemperature.json
           git commit -m "Refresh live environmental snapshot"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # Pushes made with GITHUB_TOKEN do not fire `push` workflows, so the
+      # deploy is dispatched explicitly, and only when a new snapshot landed.
+      # Runs that found no change end here without rebuilding the site.
+      - name: Trigger Pages deploy
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

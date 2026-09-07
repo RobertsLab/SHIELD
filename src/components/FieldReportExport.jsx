@@ -1,4 +1,13 @@
+import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { SITE_LOCATIONS } from '../data/mockShellfishData';
+
+/**
+ * Upper bound on rows rendered in the printed appendix. The full record set is
+ * available through the CSV download; the print view is a summary document and
+ * tens of thousands of rows would run to hundreds of pages.
+ */
+const MAX_PRINT_ROWS = 1000;
 
 const REPORT_COLUMNS = [
   { key: 'date', label: 'Date' },
@@ -83,6 +92,26 @@ export default function FieldReportExport({ filters, stats, data }) {
   const siteDetails = SITE_LOCATIONS[filters.site];
   const generatedLabel = formatDate(Date.now());
   const dateRange = getDateRange(data);
+
+  // The record appendix is mounted only while printing. Rendering it eagerly
+  // put every filtered row (30k+ by default) into the DOM on each dashboard
+  // load, hidden by CSS. `beforeprint` fires synchronously inside
+  // window.print() and on browser-initiated prints, so flushSync is needed to
+  // get the appendix committed before the print dialog snapshots the page.
+  const [isPrinting, setIsPrinting] = useState(false);
+  useEffect(() => {
+    const handleBeforePrint = () => flushSync(() => setIsPrinting(true));
+    const handleAfterPrint = () => setIsPrinting(false);
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, []);
+
+  const printRows = isPrinting ? data.slice(0, MAX_PRINT_ROWS) : [];
+  const printTruncated = isPrinting && data.length > MAX_PRINT_ROWS;
 
   const handleDownloadCsv = () => {
     const csv = buildCsv(data, filters, stats);
@@ -180,27 +209,36 @@ export default function FieldReportExport({ filters, stats, data }) {
         </p>
       </div>
 
-      <div className="print-only report-record-appendix">
-        <h2>Filtered Observation Records</h2>
-        <table>
-          <thead>
-            <tr>
-              {REPORT_COLUMNS.map((col) => (
-                <th key={col.key}>{col.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row) => (
-              <tr key={row.id}>
+      {isPrinting ? (
+        <div className="print-only report-record-appendix">
+          <h2>Filtered Observation Records</h2>
+          {printTruncated ? (
+            <p>
+              Showing the first {MAX_PRINT_ROWS.toLocaleString()} of{' '}
+              {data.length.toLocaleString()} records. Download the CSV for the
+              complete record set.
+            </p>
+          ) : null}
+          <table>
+            <thead>
+              <tr>
                 {REPORT_COLUMNS.map((col) => (
-                  <td key={col.key}>{row[col.key] == null ? '-' : row[col.key]}</td>
+                  <th key={col.key}>{col.label}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {printRows.map((row) => (
+                <tr key={row.id}>
+                  {REPORT_COLUMNS.map((col) => (
+                    <td key={col.key}>{row[col.key] == null ? '-' : row[col.key]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
     </section>
   );
 }

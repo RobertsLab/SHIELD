@@ -81,7 +81,7 @@ export default function TimeSeriesChart({ data, metric }) {
                 fontSize: 13,
               }}
               formatter={(value) => [`${value} ${unit}`.trim(), metric]}
-              labelFormatter={(label) => `Period: ${label}`}
+              labelFormatter={(label) => `Assessment: ${label}`}
             />
             <Legend />
             <Line
