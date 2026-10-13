@@ -15,6 +15,8 @@ Sources (no API key required):
   - NOAA CO-OPS datagetter https://api.tidesandcurrents.noaa.gov/api/prod/datagetter
   - NANOOS Shellfish Growers source matches for chlorophyll / water quality
     https://nvs.nanoos.org/ShellfishGrowers
+  - NANOOS NVS recent measurements (live chlorophyll, e.g. FHL Ocean Observatory)
+    https://nvs.nanoos.org/ssa/get_recent_measurements.php?platform_label=<ID>
 
 Each site lists candidate stations in priority order (closest / most reliable
 first). Sensors intermittently report "MM" (missing), so the script falls
@@ -124,16 +126,21 @@ CHLOROPHYLL_CANDIDATES = {
         "note": "Use as the nearest NANOOS shellfish chlorophyll source until a Sequim-specific public station is available.",
     },
     "Palix River/Willapa Bay": {
-        "provider": "NANOOS Shellfish Growers / WA Ecology / Pacific Shellfish Institute",
-        "station_name": "Willapa Bay / Bay Center monitoring sites",
-        "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
-        "note": "Closest shellfish-focused chlorophyll source for Palix River / Willapa Bay.",
+        "provider": "NANOOS NVS / Pacific Shellfish Institute",
+        "station_name": "PSI Tokeland",
+        "source_url": "https://nvs.nanoos.org/Explorer?action=oiw:fixed_platform:PSI_Tokeland:observations:H2_Chlorophyll",
+        "note": "PSI Tokeland sonde, -1.8 m; nearest live in-situ chlorophyll to Palix River / Willapa Bay.",
+        "nvs": {"platform": "PSI_Tokeland", "measurement": "H2_Chlorophyll",
+                "lat": 46.7075, "lon": -123.9669, "digits": 3},
     },
     "Westcott": {
-        "provider": "NANOOS Shellfish Growers / Padilla Bay NERR",
-        "station_name": "Padilla Bay / Bayview water-quality stations",
-        "source_url": "https://nvs.nanoos.org/ShellfishGrowers",
-        "note": "Regional Salish Sea chlorophyll source; pair with nearby NDBC/CO-OPS met data for San Juan sites.",
+        "provider": "NANOOS NVS / FHL-UW",
+        "station_name": "Friday Harbor Laboratories Ocean Observatory",
+        "source_url": "https://nvs.nanoos.org/Explorer?action=oiw:fixed_platform:FHL_FHLOO:observations:H1_Chlorophyll",
+        "note": "FHL pier sonde, -1.5 m; nearest live in-situ chlorophyll to Westcott Bay.",
+        # Live pull from the NVS recent-measurements endpoint (no key required).
+        "nvs": {"platform": "FHL_FHLOO", "measurement": "H1_Chlorophyll",
+                "lat": 48.5453, "lon": -123.0125},
     },
 }
 
@@ -256,7 +263,7 @@ def age_hours(dt_utc):
     return (datetime.now(timezone.utc) - dt_utc).total_seconds() / 3600.0
 
 
-def metric_payload(key, value, observed_at, source_url, station, provider):
+def metric_payload(key, value, observed_at, source_url, station, provider, digits=1):
     if value is None:
         return None
     spec = METRIC_DEFS[key]
@@ -264,7 +271,7 @@ def metric_payload(key, value, observed_at, source_url, station, provider):
         "key": key,
         "label": spec["label"],
         "unit": spec["unit"],
-        "value": round(value, 1),
+        "value": round(value, digits),
         "observed_at": observed_at,
         "source_url": source_url,
         "station_id": station["id"],
@@ -499,6 +506,41 @@ def read_usgs_streamflow(station):
     return None
 
 
+def read_nvs_chlorophyll(source):
+    """Latest chlorophyll from a NANOOS NVS fixed platform (e.g. FHL Ocean Observatory)."""
+    nvs = source["nvs"]
+    url = ("https://nvs.nanoos.org/ssa/get_recent_measurements.php"
+           f"?platform_label={nvs['platform']}")
+    data = json.loads(fetch(url))
+    if not data.get("success"):
+        return None
+    row = next((r for r in data.get("result", [])
+                if r.get("measurement_label") == nvs["measurement"]), None)
+    if not row:
+        return None
+    try:
+        val = float(row["value"])
+        dt = datetime.fromtimestamp(int(row["measurement_time"]), tz=timezone.utc)
+    except (KeyError, TypeError, ValueError):
+        return None
+    if age_hours(dt) > MAX_AGE_HOURS:
+        return None
+    station = {"id": nvs["platform"], "name": source["station_name"],
+               "lat": nvs["lat"], "lon": nvs["lon"]}
+    payload = metric_payload(
+        "chlorophyll_fluorescence",
+        val,
+        dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        source["source_url"],
+        station,
+        source["provider"],
+        digits=nvs.get("digits", 2),
+    )
+    payload["unit"] = row.get("units") or "µg/L"
+    payload["note"] = source["note"]
+    return payload
+
+
 READERS = {"ndbc": read_ndbc, "coops": read_coops}
 PROVIDER = {"ndbc": "NOAA NDBC", "coops": "NOAA CO-OPS"}
 
@@ -574,19 +616,33 @@ def resolve_site(site):
             break
 
     chlorophyll = CHLOROPHYLL_CANDIDATES[site]
-    metrics["chlorophyll_fluorescence"] = {
-        "key": "chlorophyll_fluorescence",
-        "label": METRIC_DEFS["chlorophyll_fluorescence"]["label"],
-        "unit": METRIC_DEFS["chlorophyll_fluorescence"]["unit"],
-        "value": None,
-        "observed_at": None,
-        "source_url": chlorophyll["source_url"],
-        "station_id": None,
-        "station_name": chlorophyll["station_name"],
-        "provider": chlorophyll["provider"],
-        "status": "source-matched",
-        "note": chlorophyll["note"],
-    }
+    live_chl = None
+    if "nvs" in chlorophyll:
+        tried.append(chlorophyll["nvs"]["platform"])
+        try:
+            live_chl = read_nvs_chlorophyll(chlorophyll)
+        except Exception as e:
+            print(f"  ! {site}: chlorophyll {chlorophyll['nvs']['platform']} failed "
+                  f"({e.__class__.__name__})", file=sys.stderr)
+    if live_chl:
+        metrics["chlorophyll_fluorescence"] = {
+            **live_chl,
+            "distance_km": haversine_km(slat, slon, live_chl["station_lat"], live_chl["station_lon"]),
+        }
+    else:
+        metrics["chlorophyll_fluorescence"] = {
+            "key": "chlorophyll_fluorescence",
+            "label": METRIC_DEFS["chlorophyll_fluorescence"]["label"],
+            "unit": METRIC_DEFS["chlorophyll_fluorescence"]["unit"],
+            "value": None,
+            "observed_at": None,
+            "source_url": chlorophyll["source_url"],
+            "station_id": None,
+            "station_name": chlorophyll["station_name"],
+            "provider": chlorophyll["provider"],
+            "status": "source-matched",
+            "note": chlorophyll["note"],
+        }
 
     water = metrics.get("water_temperature_C")
     primary = water or next((m for m in metrics.values() if m.get("value") is not None), None)
