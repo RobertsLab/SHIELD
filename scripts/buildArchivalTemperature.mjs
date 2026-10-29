@@ -1,10 +1,18 @@
 /**
  * Build archival water-temperature data for the dashboard.
  *
- * Source CSVs are high-frequency (≈15 min) HOBO logger records in the form
+ * Most sources are high-frequency (≈15 min) HOBO logger CSVs in the form
  * `logger,DateTime,temp.C`. This script downloads each site's CSV, aggregates
  * to a daily mean / min / max per site, and writes a compact JSON bundle that
  * the app imports directly (no raw 850k-row payload shipped to the browser).
+ *
+ * Thorndyke Bay instead uses the cleaned daily water temperature built by the
+ * Acantha portal (RobertsLab/acantha, baseline/hobo_archive.py) from
+ * 10K-seed-Cgigas output/baywater_temperature_20260922.csv. Those loggers sit
+ * in an intertidal bag (~2 ft MLLW), so plain daily means mix water and air;
+ * Acantha keeps only readings taken while the bag was well covered, converts
+ * the loggers' UTC-7 clock (the CSV's "Z" is wrong), and drops field visits and
+ * the Aug 20-21, 2025 span when the loggers were out of the bag.
  *
  * Run with:  node scripts/buildArchivalTemperature.mjs
  */
@@ -14,10 +22,11 @@ import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** Display name -> source CSV. Names match SITE_LOCATIONS in mockShellfishData.js. */
+/** Display name -> source. Names match SITE_LOCATIONS in mockShellfishData.js. */
+const ACANTHA_THORNDYKE =
+  'https://raw.githubusercontent.com/RobertsLab/acantha/main/web/baseline/thorndyke_hobo.json';
 const SOURCES = {
-  'Thorndyke Bay':
-    'https://raw.githubusercontent.com/RobertsLab/10K-seed-Cgigas/main/output/baywater_temperature_20250822.csv',
+  'Thorndyke Bay': ACANTHA_THORNDYKE,
   'Sequim Bay':
     'https://raw.githubusercontent.com/RobertsLab/project-gigas-conditioning/main/output/environmental/sequim-temperature-data.csv',
   'Palix River/Willapa Bay':
@@ -51,6 +60,7 @@ async function fetchDailyMeans(url) {
     if (!Number.isFinite(temp)) continue;
 
     const day = dateTime.slice(0, 10); // YYYY-MM-DD (UTC)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue; // e.g. trailing rows with DateTime "NA"
     let agg = byDay.get(day);
     if (!agg) {
       agg = { sum: 0, count: 0, min: Infinity, max: -Infinity };
@@ -75,6 +85,28 @@ async function fetchDailyMeans(url) {
   return { logger, days };
 }
 
+/** Daily water temperature from Acantha's cleaned Thorndyke bag record. */
+async function fetchAcanthaDaily(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+  const hobo = await res.json();
+  const col = Object.fromEntries(hobo.daily_columns.map((c, i) => [c, i]));
+  const days = hobo.daily
+    .filter((r) => r[col.water_mean] != null)
+    .map((r) => ({
+      date: r[col.date],
+      mean: r[col.water_mean],
+      min: r[col.water_min],
+      max: r[col.water_max],
+    }));
+  return {
+    logger: hobo.loggers.map((l) => l.serial).join('+'),
+    days,
+    observations: hobo.loggers.reduce((s, l) => s + l.readings, 0),
+    source: hobo.source,
+  };
+}
+
 const MONTHS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
@@ -91,7 +123,9 @@ async function main() {
 
   for (const site of siteNames) {
     process.stderr.write(`Fetching ${site}…\n`);
-    const { logger, days } = await fetchDailyMeans(SOURCES[site]);
+    const acantha = SOURCES[site] === ACANTHA_THORNDYKE;
+    const got = acantha ? await fetchAcanthaDaily(SOURCES[site]) : await fetchDailyMeans(SOURCES[site]);
+    const { logger, days } = got;
     perSite[site] = days;
     meta.push({
       site,
@@ -99,8 +133,12 @@ async function main() {
       start: days[0]?.date ?? null,
       end: days.at(-1)?.date ?? null,
       days: days.length,
-      observations: days.reduce((s, d) => s + d.n, 0),
-      source: SOURCES[site],
+      observations: got.observations ?? days.reduce((s, d) => s + d.n, 0),
+      source: got.source ?? SOURCES[site],
+      ...(acantha && {
+        processedBy: SOURCES[site],
+        note: 'Water only: readings while the intertidal bag (Step 4, ~2 ft MLLW) was well covered.',
+      }),
     });
   }
 
@@ -124,7 +162,7 @@ async function main() {
   const bundle = {
     generatedAt: new Date().toISOString().slice(0, 10),
     description:
-      'Daily mean water temperature (°C) from HOBO loggers at four Pacific Northwest shellfish sites. Aggregated from ~15-min source records.',
+      'Daily mean water temperature (°C) from HOBO loggers at four Pacific Northwest shellfish sites. Aggregated from ~15-min source records; Thorndyke Bay uses only readings taken while its intertidal bag was covered (see meta).',
     sites: siteNames,
     meta,
     series,
