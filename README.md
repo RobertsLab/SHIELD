@@ -62,7 +62,10 @@ The backend-like work happens before deployment:
   outputs and writes `public/data/survivalObservations.json`.
 - `scripts/buildArchivalTemperature.mjs` downloads high-frequency HOBO logger
   CSVs, aggregates them to daily mean/min/max water temperature, and writes
-  `public/data/archivalTemperatureData.json`.
+  `public/data/archivalTemperatureData.json`. Thorndyke Bay instead uses the
+  cleaned daily water temperature from the Acantha portal
+  (`RobertsLab/acantha` `web/baseline/thorndyke_hobo.json`), because its
+  loggers sit in an intertidal bag and plain daily means mix water and air.
 - `scripts/build_live_temperature.py` fetches recent public environmental
   observations from nearby NOAA, USGS, and NANOOS-matched sources and writes
   `public/data/liveTemperature.json`.
